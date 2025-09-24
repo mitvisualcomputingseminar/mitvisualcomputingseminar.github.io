@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visual Computing Seminar @ MIT CSAIL</title>
+  <meta name="description" content="Visual Computing Seminar at MIT — weekly on Tuesdays 12–1PM ET (mostly) at 32-463. Talks, calendar, about, and past speakers." />
+  <style>
+    :root{
+      --brick: #B94700;
+      --honey: #F0B323;
+      --blue:  #009CDE;
+      --gray:  #898D8D;
+      --light: #E9EAEA;
+      --ink:   #0C0C0C;
+      --paper: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.5;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+
+    /* Header */
+    header{
+      position: sticky; top:0; z-index: 50;
+      background: #000; color:#fff;
+      border-bottom: 1px solid #000;
+    }
+    .nav{ max-width: 1100px; margin: 0 auto; display:flex; align-items:center; gap:20px; padding:14px 20px; }
+    .logo{ font-weight: 900; letter-spacing: .2px; font-size: 1.02rem; display:flex; align-items:center; gap:.6rem; color:#fff; }
+    .nav a{ color: rgba(255,255,255,.92); text-decoration: none; font-weight: 600; }
+    .spacer{ flex:1 }
+    .nav .links{ display:flex; gap:16px; flex-wrap: wrap; align-items:center; }
+    .btn{ appearance: none; border: 2px solid var(--brick); background: var(--brick); color:#fff; padding:10px 14px; border-radius: 999px; font-weight:800; cursor:pointer; }
+    .btn:hover{ filter: brightness(.95); }
+    .btn.secondary{ background: transparent; border-color:#fff; color:#fff; }
+    .btn.secondary:hover{ background: rgba(255,255,255,.08); }
+    .btn:focus{ outline: 3px solid color-mix(in srgb, var(--honey) 45%, transparent); outline-offset: 2px; }
+
+    /* Hero */
+    .hero{ background: var(--paper); border-bottom: 1px solid var(--light); }
+    .hero-inner{ max-width:1100px; margin:0 auto; padding:64px 20px 40px; display:grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items:center; }
+    h1{ font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.1; margin: 0; }
+    .tag{ display:inline-flex; gap:.5rem; align-items:center; background: var(--honey); color:#231f00; border-radius:999px; padding:6px 10px; font-weight:900; letter-spacing:.3px; text-transform: uppercase; font-size:.75rem; }
+    .hero .meta{ margin-top: 14px; color: #404349; font-weight:650; }
+    .hero .cta{ display:flex; gap:12px; margin-top: 18px; flex-wrap: wrap; }
+    .hero-card{ background: #fff; border:1px solid var(--light); border-radius: 18px; padding:18px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+    .hero-card h3{ margin:.2rem 0 .4rem; }
+
+    /* Sections */
+    section{ scroll-margin-top: 88px; }
+    .container{ max-width:1100px; margin:0 auto; padding: 44px 20px; }
+    .eyebrow{ text-transform: uppercase; letter-spacing: .18em; font-weight: 900; color: var(--brick); font-size: .78rem; }
+    h2{ font-size: clamp(1.6rem, 2.6vw, 2.2rem); margin:.35rem 0 1rem; }
+
+    /* Calendar */
+    .filterbar{ display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
+    .input{ border:1px solid var(--light); padding:10px 12px; border-radius: 12px; min-width: 220px; }
+    .tabs{ display:inline-flex; background: #F7F7F7; padding: 4px; border-radius: 12px; border:1px solid var(--light); }
+    .tab{ border:0; background: transparent; padding:8px 12px; border-radius: 10px; font-weight: 800; cursor:pointer; }
+    .tab[aria-selected="true"]{ background: #fff; border:1px solid var(--light); }
+
+    .monthbar{ display:flex; align-items:center; gap:10px; margin-top: 12px; }
+    .chip{ border:1px solid var(--light); padding:8px 12px; border-radius: 999px; font-weight:800; background:#fff; }
+    .arrow{ width:36px; height:36px; border-radius:10px; border:1px solid var(--light); background:#fff; display:grid; place-items:center; cursor:pointer; }
+
+    .list{ margin-top: 20px; }
+    .month{ border-top:2px solid #E2E2E2; padding-top: 12px; margin-top: 30px; }
+
+    /* Events */
+    .event{ display:grid; grid-template-columns: 110px 1fr; gap:14px; padding:14px 10px; border-radius:14px; border:1px solid var(--light); background: #fff; margin: 10px 0; align-items: start; }
+    .event .date{
+      position: relative;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      font-weight:900;
+      color:#fff;
+      background: linear-gradient(180deg, #8F2D00 0%, var(--brick) 60%, var(--honey) 160%); /* fallback when no photo */
+      border-radius: 12px;
+      padding: 10px 8px;
+      overflow: hidden;
+    }
+    .event .date .dow{ font-size:.78rem; opacity:.9; }
+    .event .date .day{ font-size:1.9rem; line-height:1; }
+
+    /* Photos */
+    .date-photo{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .date.has-photo::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(145deg, rgba(0,0,0,.30), rgba(0,0,0,.10) 55%, rgba(0,0,0,0));
+    }
+    .date-overlay{ position: relative; z-index: 1; transition: opacity .18s ease, transform .18s ease; }
+    .date:hover .date-overlay{ opacity:0; transform: translateY(-2px); }
+
+    .event h4{ margin: 0; color: #111; }
+    .event .meta{ color: #4b4f56; font-weight:600; margin: 4px 0; }
+    .event .tags{ display:flex; gap:8px; flex-wrap:wrap; }
+    .pill{ font-size:.75rem; font-weight:900; padding:4px 8px; border-radius:999px; border:1px solid var(--light); background: #FAFAFA; }
+    .event .actions{ margin-top: 6px; display:flex; gap:8px; }
+
+    /* Calendar grid */
+    .calgrid{ margin-top: 16px; border:1px solid var(--light); border-radius: 14px; overflow:hidden; }
+    .calgrid .head, .calgrid .row{ display:grid; grid-template-columns: repeat(7, 1fr); }
+    .calgrid .head div{ background: #F7F7F7; padding:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; }
+    .cell{ min-height: 92px; border-top:1px solid var(--light); border-right:1px solid var(--light); padding:8px; position:relative; }
+    .cell:nth-child(7n){ border-right:0; }
+    .cell .d{ position:absolute; top:6px; right:8px; font-weight:800; font-size:.85rem; color: #6a6e73; }
+    .chip-event{ display:block; margin-top: 24px; border-left: 4px solid var(--brick); padding:6px 8px; background: #B94700; border-radius: 10px; box-shadow: 0 1px 0 rgba(0,0,0,.03); font-weight:800; font-size:.86rem; color:#fff; }
+
+    /* About */
+    .about p{ max-width: 70ch; }
+    .organizers{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card{ background:#fff; border:1px solid var(--light); border-radius: 16px; padding: 16px; }
+
+    .org-list{ display:grid; grid-template-columns: 1fr; gap: 10px; }
+    .org{ display:flex; align-items:center; gap: 10px; }
+    .avatar{ width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--light); background:#f2f2f2; font-size:0; }
+    .avatar-lg{ width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--light); background:#f2f2f2; font-size:0; }
+    .org-card-head{ display:flex; align-items:center; gap: 12px; }
+    .org-name{ font-weight: 900; }
+    .org-email{ color:#5b5f64; font-size:.92rem; }
+
+    footer{ margin-top: 40px; border-top:1px solid var(--light); }
+    footer .container{ display:flex; align-items:center; justify-content: space-between; gap: 10px; padding-top: 22px; padding-bottom: 22px; color: #5b5f64; font-size: .9rem; }
+
+    @media (max-width: 880px){
+      .hero-inner{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="logo">Visual Computing Seminar</div>
+      <div class="spacer"></div>
+      <div class="links">
+        <a href="#calendar">Calendar</a>
+        <a href="#about">About</a>
+        <button class="btn secondary" id="download-ics">Add to Calendar</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div>
+        <span class="tag">New • 2025–26</span>
+        <h1>Visual Computing Seminar</h1>
+        <div class="meta">Tuesdays • 12:00–1:00 PM ET • 32-D463 Star Room, MIT CSAIL</div>
+        <div class="cta">
+          <a class="btn" href="#calendar">See upcoming talks</a>
+          <a class="btn" target="_blank" rel="noopener" href="https://forms.gle/2kiZY5ae2jGbHY4X6">Sign up to give a talk</a>
+          <button class="btn secondary" id="add-next">Add next talk to calendar</button>
+        </div>
+      </div>
+      <div class="hero-card" role="complementary" aria-label="Organizers">
+        <h3>Organizers</h3>
+        <div class="org-list">
+          <div class="org">
+            <img class="avatar" src="https://www.kushagratiwary.com/images/kush.jpeg" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Kush Tiwary" />
+            <div>
+              <div class="org-name">Kush Tiwary</div>
+              <div class="org-email"><a href="mailto:ktiwary@mit.edu">ktiwary@mit.edu</a></div>
+              <div><a href="https://www.kushagratiwary.com/" target="_blank" rel="noopener">kushagratiwary.com</a></div>
+            </div>
+          </div>
+          <div class="org">
+            <img class="avatar" src="https://lmattos.com/figures/profile.png" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Leticia Mattos Da Silva" />
+            <div>
+              <div class="org-name">Leticia Mattos Da Silva</div>
+              <div class="org-email"><a href="mailto:leticiam@mit.edu">leticiam@mit.edu</a></div>
+              <div><a href="https://lmattos.com/" target="_blank" rel="noopener">lmattos.com</a></div>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? Email us!</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="container">
+      <div class="eyebrow">About</div>
+      <p>
+        The Visual Computing Seminar is a weekly gathering of Vision and Graphics researchers and enthusiasts. The seminar focuses mostly on internal speakers, and lunch is provided.
+      </p>
+      <p><strong>When:</strong> Tuesdays, 12:00–1:00 PM Eastern Time</p>
+      <p><strong>Where:</strong> 32-D463 Star Room, MIT CSAIL (subject to change)</p>
+      <p><strong>Format:</strong> 25 or 50 minutes talks</p>
+    </div>
+  </section>
+
+  <section id="calendar">
+    <div class="container">
+      <div class="eyebrow">Schedule</div>
+      <h2>Calendar</h2>
+      <div class="filterbar">
+        <input class="input" id="search" placeholder="Keyword search (title, speaker, notes)…" aria-label="Keyword search" />
+        <div class="tabs" role="tablist" aria-label="Calendar display">
+          <button class="tab" role="tab" aria-selected="true" data-view="list">List</button>
+          <button class="tab" role="tab" aria-selected="false" data-view="grid">Calendar</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="monthbar">
+          <button class="arrow" id="prevMonth" aria-label="Previous month">◀</button>
+          <div class="chip" id="rangeLabel">Loading…</div>
+          <button class="arrow" id="nextMonth" aria-label="Next month">▶</button>
+          <button class="tab" id="jumpToday" aria-label="Jump to current month">Today</button>
+        </div>
+      </div>
+
+      <div id="listView" class="list" aria-live="polite"></div>
+      <div id="gridView" class="calgrid" hidden aria-live="polite"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© <span id="year"></span> Visual Computing Seminar • MIT CSAIL</div>
+    </div>
+  </footer>
+
+  <script>
+    // Some helpers
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+
+    const tz = 'America/New_York';
+    const locationName = '32-D463 Star Room';
+
+    // Format stuff
+    const fmt = new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+    const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
+    const fmtDow = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
+    const fmtTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: tz });
+
+    // Set up a recurring seminar series every Tuesday by default
+    function generateTuesdays(start = new Date(), count = 16){
+      const events = [];
+      const first = new Date(start);
+      // Move to next Tuesday
+      const day = first.getDay(); // Sunday=0
+      const delta = (2 - day + 7) % 7;
+      if (delta !== 0) first.setDate(first.getDate() + delta);
+
+      for(let i=0;i<count;i++){
+        const d = new Date(first);
+        d.setDate(first.getDate() + i*7);
+        const startAt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 16, 0)); // 12:00 ET ≈ 16:00 UTC
+        const endAt   = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 17, 0)); // 1 hour
+        events.push({
+          id: `auto-${d.toISOString().slice(0,10)}`,
+          title: 'TBA',
+          speaker: 'TBA',
+          affiliation: '',
+          notes: '',
+          startAt, endAt,
+          location: locationName,
+          url: '',
+          photo: '',
+          series: '',
+          seminar: '',
+        });
+      }
+      return events;
+    }
+
+    // We add seminars manually here
+    const manual = [
+      { date: '2025-09-09', title: 'Kickoff Event', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
+      { date: '2025-09-16', title: 'Coadjoint Orbits Preserving Fluid Simulation', speaker: 'Sina Nabizadeh', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://sinabiz.github.io/images/sina25.jpeg' },
+      { date: '2025-09-23', title: 'Verified Scheduling for Optimizing High-Level Tensor Programs', speaker: 'Amanda Liu', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, short: true, photo: 'https://people.csail.mit.edu/lamanda/images/avatar.jpg' },
+      { date: '2025-09-30', title: 'A Geometric View of Data Complexity: Efficient Local Intrinsic Dimension Estimation with Diffusion Models', speaker: 'Hamid Kamkari', affiliation: 'CSAIL', location: '32-D507', seminar: true, long: true, photo: 'https://hamidrezakmk.github.io/hamid.png' },
+      { date: '2025-10-07', title: 'Scaling World Simulators for Safe Physical Intelligence', speaker: 'Jingkang Wang', affiliation: 'University of Toronto', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=c0BTYC4AAAAJ&citpid=7' },
+      { 
+        date: '2025-10-28',
+        location: '32-D463 Star Room',
+        seminar: true,
+        talks: [
+          { title: 'Scaling up robot learning with in the wild human videos', speaker: 'Richard Li', affiliation: 'MIT', start: '12:00', end: '12:30', short: true, photo: 'https://raw.githubusercontent.com/richardrl/rlkit-relational/master/docs/images/stack6_29.gif' },
+          { title: 'PhysiOpt: Physics-Driven Shape Optimization for 3D Generative Models', speaker: 'Sean Zhan and Clement Jambon',   affiliation: 'CSAIL', start: '12:30', end: '1:00', short: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2023/09/sean_lower_res-1024x1024.jpg' }
+        ]
+      },
+      { date: '2025-11-04', speaker: 'Abe Davis', affiliation: 'Cornell University', location: '32-D507', seminar: true, long: true,  photo: 'https://www.cs.cornell.edu/abe/group/content/groupbios/abe/abe.jpeg'},
+      { skip: '2025-11-11', reason: 'Veterans Day' },
+      { date: '2025-11-18', title: 'Support Function Parameterization of Convex Hulls for Fast Distance Queries', speaker: 'Anh Truong', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2024/10/anh.jpg' },
+      { skip: '2025-11-25', reason: 'Thanksgiving' },
+      { date: '2025-12-02', title: 'One String to Pull Them All: Fast Assembly of Curved Structures from Flat Auxetic Linkages', speaker: 'Akib Zaman', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2023/09/akib-scaled-e1694743990993-768x768.jpg' },
+      { date: '2025-12-09', title: 'Emergent Circuits and Fundamental Limitations of SoTA VLMs', speaker: 'Raphi Kang', affiliation: 'CSAIL', location: '32-D507', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=49_WjdIAAAAJ&citpid=2' },
+      { skip: '2025-12-16', reason: 'Holiday' },
+      { skip: '2025-12-23', reason: 'Holiday' },
+      { skip: '2025-12-30', reason: 'Holiday' },
+      { skip: '2026-01-06', reason: 'IAP' },
+      { skip: '2026-01-13', reason: 'IAP' },
+      { skip: '2026-01-20', reason: 'IAP' },
+      { skip: '2026-01-27', reason: 'IAP' },
+      { skip: '2026-01-27', reason: 'IAP' },
+      { skip: '2026-02-03', reason: 'IAP' },
+      { skip: '2026-03-24', reason: 'Spring Break' },
+    ];
+
+    function applyManual(base){
+      const byDate = new Map(base.map(ev => [ev.startAt.toISOString().slice(0,10), ev]));
+
+      for(const m of manual){
+        if(m.skip){ byDate.delete(m.skip); continue; }
+
+        if(m.date){
+          // if a date declares multiple talks, replace that day with separate events
+          if (Array.isArray(m.talks) && m.talks.length){
+            byDate.delete(m.date); // remove the auto placeholder
+            for(const t of m.talks){
+
+              const [sh, sm] = (t.start || '12:00').split(':').map(Number);
+              const [eh, em] = (t.end   || '12:25').split(':').map(Number);
+
+              const startAt = new Date(`${m.date}T${String(sh+4).padStart(2,'0')}:${String(sm).padStart(2,'0')}:00Z`);
+              const endAt   = new Date(`${m.date}T${String(eh+4).padStart(2,'0')}:${String(em).padStart(2,'0')}:00Z`);
+
+              const ev = {
+                id: `multi-${m.date}-${sh}${sm}`,
+                title: t.title || 'TBA',
+                speaker: t.speaker || '',
+                affiliation: t.affiliation || '',
+                notes: t.notes || '',
+                startAt, endAt,
+                location: m.location || t.location || locationName,
+                url: t.url || '',
+                photo: t.photo || m.photo || '',
+                short: t.short ?? true,
+                long: t.long ?? false,
+                series: !!m.series,
+                seminar: !!m.seminar,
+              };
+              // Store alongside others for that date
+              const bucket = byDate.get(m.date);
+              if(bucket){ // shouldn't happen since we deleted, but just in case
+                if(Array.isArray(bucket)) bucket.push(ev); else byDate.set(m.date, [bucket, ev]);
+              } else {
+                // use an array to support multiple events for that key during sorting step
+                byDate.set(m.date, [ev]);
+              }
+            }
+            continue;
+          }
+
+          // Single event override path
+          const ev = byDate.get(m.date);
+          if(ev){ Object.assign(ev, m); }
+          else {
+            const d = new Date(m.date + 'T16:00:00Z');
+            const end = new Date(m.date + 'T17:00:00Z');
+            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || 'Special Talk', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', photo: m.photo||'', series:false});
+          }
+        }
+      }
+
+      // Some entries may be arrays if multiple talks so we need to flatten
+      const flat = [];
+      for(const val of byDate.values()){
+        if(Array.isArray(val)) flat.push(...val); else flat.push(val);
+      }
+      return flat.sort((a,b)=>a.startAt-b.startAt);
+    }
+
+
+    // Build event data
+    const baseEvents = generateTuesdays(new Date(), 22); // tweak the window
+    const events = applyManual(baseEvents);
+
+    // Calendar state and rendering
+    const state = {
+      view: 'list',
+      month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      q: ''
+    };
+
+    const listView = $('#listView');
+    const gridView = $('#gridView');
+
+    function rangeLabel(){ return fmtMonth.format(state.month); }
+
+    function eventMatches(ev, q){
+      if(!q) return true;
+      q = q.toLowerCase();
+      return [ev.title, ev.speaker, ev.affiliation, ev.notes].filter(Boolean).some(s => String(s).toLowerCase().includes(q));
+    }
+
+    function monthEvents(monthDate){
+      const m = monthDate.getMonth(), y = monthDate.getFullYear();
+      return events.filter(ev => {
+        const d = new Date(ev.startAt);
+        return d.getMonth()===m && d.getFullYear()===y && eventMatches(ev, state.q);
+      });
+    }
+
+    function renderList(){
+      listView.innerHTML = '';
+      const m = monthEvents(state.month);
+      $('#rangeLabel').textContent = rangeLabel();
+      if(m.length===0){ listView.innerHTML = `<p style="color:var(--muted)">No talks this month. Try another month or clear search.</p>`; return; }
+
+      const monthBlock = document.createElement('div');
+      monthBlock.className = 'month';
+      monthBlock.innerHTML = `<h3 style="margin:0 0 12px">${fmtMonth.format(state.month)}</h3>`;
+
+      for(const ev of m){
+        const d = new Date(ev.startAt);
+        const end = new Date(ev.endAt);
+        const hasPhoto = ev.photo && ev.photo.trim() !== '';
+        const node = document.createElement('article');
+        node.className = 'event';
+        node.innerHTML = `
+          <div class="date ${hasPhoto ? 'has-photo' : ''}">
+            ${hasPhoto ? `<img class="date-photo" src="${ev.photo}" alt="${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}" />` : ''}
+            <div class="date-overlay">
+              <div class="dow">${fmtDow.format(d)}</div>
+              <div class="day">${d.getDate()}</div>
+            </div>
+          </div>
+          <div>
+            <h4>${ev.title}</h4>
+            <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
+            <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} · ${ev.location || locationName}</div>
+            ${ev.notes?`<div class="meta" style="margin-top:4px">${ev.notes}</div>`:''}
+            <div class="tags">
+              <span class="pill">Seminar</span>
+              ${ev.series?'<span class="pill" style="border-color:var(--honey)">Series</span>':''}
+              ${ev.long?'<span class="pill" style="border-color:var(--honey)">50 minutes</span>':''}
+              ${ev.short?'<span class="pill" style="border-color:var(--honey)">25 minutes</span>':''}
+            </div>
+            <div class="actions">
+              <button class="btn secondary" onclick='downloadICS([${JSON.stringify(ev)}], "visual-computing-seminar.ics")'>Add to Calendar</button>
+              ${ev.url?`<a class="btn" target="_blank" rel="noopener" href="${ev.url}">Details</a>`:''}
+            </div>
+          </div>`;
+        monthBlock.appendChild(node);
+      }
+      listView.appendChild(monthBlock);
+    }
+
+    function renderGrid(){
+      gridView.innerHTML = '';
+      $('#rangeLabel').textContent = rangeLabel();
+      const y = state.month.getFullYear();
+      const m = state.month.getMonth();
+
+      const first = new Date(y, m, 1);
+      const startDow = (first.getDay()+6)%7;
+      const daysInMonth = new Date(y, m+1, 0).getDate();
+
+      const head = document.createElement('div');
+      head.className = 'head';
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d =>{ const c=document.createElement('div'); c.textContent=d; head.appendChild(c); });
+      gridView.appendChild(head);
+
+      const cells = document.createElement('div');
+      cells.className = 'row';
+      const totalCells = Math.ceil((startDow + daysInMonth)/7)*7;
+      for(let i=0;i<totalCells;i++){
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const dayNum = i - startDow + 1;
+        if(dayNum>0 && dayNum<=daysInMonth){
+          cell.innerHTML = `<span class="d">${dayNum}</span>`;
+          const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+          const todays = events.filter(ev=>{
+            const ds = ev.startAt.toISOString().slice(0,10);
+            return ds===dateStr && eventMatches(ev, state.q);
+          });
+          for(const ev of todays){
+            const d = new Date(ev.startAt);
+            const end = new Date(ev.endAt);
+            const chip = document.createElement('a');
+            chip.href = '#calendar';
+            chip.className = 'chip-event';
+            chip.textContent = `${fmtTime.format(d)} ${ev.title}`;
+            chip.title = `${ev.speaker||''} ${ev.affiliation?('— '+ev.affiliation):''}\n${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} · ${ev.location||locationName}`;
+            cell.appendChild(chip);
+          }
+        }
+        cells.appendChild(cell);
+      }
+      gridView.appendChild(cells);
+    }
+
+    function render(){
+      if(state.view==='list'){
+        listView.hidden = false; gridView.hidden = true; renderList();
+      } else {
+        listView.hidden = true; gridView.hidden = false; renderGrid();
+      }
+    }
+
+    // .ics download 
+    function toICSDate(d){
+      const yyyy = d.getUTCFullYear();
+      const mm = String(d.getUTCMonth()+1).padStart(2,'0');
+      const dd = String(d.getUTCDate()).padStart(2,'0');
+      const HH = String(d.getUTCHours()).padStart(2,'0');
+      const MM = String(d.getUTCMinutes()).padStart(2,'0');
+      const SS = '00';
+      return `${yyyy}${mm}${dd}T${HH}${MM}${SS}Z`;
+    }
+
+    function icsFor(events){
+      const lines = [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MIT CSAIL//Visual Computing Seminar//EN'
+      ];
+      for(const ev of events){
+        const uid = ev.id || (ev.title + '-' + ev.startAt.toISOString());
+        lines.push('BEGIN:VEVENT');
+        lines.push(`UID:${uid}`);
+        lines.push(`DTSTAMP:${toICSDate(new Date())}`);
+        lines.push(`DTSTART:${toICSDate(ev.startAt)}`);
+        lines.push(`DTEND:${toICSDate(ev.endAt)}`);
+        lines.push(`SUMMARY:${escapeICS(ev.title)}`);
+        const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, ev.notes].filter(Boolean);
+        lines.push(`DESCRIPTION:${escapeICS(descParts.join(' — '))}`);
+        lines.push(`LOCATION:${escapeICS(ev.location || locationName)}`);
+        if(ev.url) lines.push(`URL:${ev.url}`);
+        lines.push('END:VEVENT');
+      }
+      lines.push('END:VCALENDAR');
+      return lines.join('\r\n');
+    }
+    function escapeICS(s){
+      return String(s).replace(/[\\;,\n]/g, ch=> ({'\\':'\\\\',';':'\\;','\n':'\\n',',':'\\,'}[ch])).replace(/\r/g,'');
+    }
+    function download(filename, text){
+      const blob = new Blob([text], {type:'text/calendar'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 1000);
+    }
+    function downloadICS(evts, name){ download(name, icsFor(evts)); }
+
+    // Controls
+    $('#year').textContent = new Date().getFullYear();
+
+    $$('.tab[role="tab"]').forEach(btn=>btn.addEventListener('click', e=>{
+      $$('.tab[role="tab"]').forEach(b=>b.setAttribute('aria-selected','false'));
+      e.currentTarget.setAttribute('aria-selected','true');
+      state.view = e.currentTarget.dataset.view;
+      render();
+    }));
+    $('#prevMonth').addEventListener('click', ()=>{ state.month = new Date(state.month.getFullYear(), state.month.getMonth()-1, 1); render(); });
+    $('#nextMonth').addEventListener('click', ()=>{ state.month = new Date(state.month.getFullYear(), state.month.getMonth()+1, 1); render(); });
+    $('#jumpToday').addEventListener('click', ()=>{ state.month = new Date(new Date().getFullYear(), new Date().getMonth(), 1); render(); });
+
+    $('#search').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
+
+    $('#download-ics').addEventListener('click', ()=> downloadICS(events, 'visual-computing-seminar-series.ics'));
+    $('#add-next').addEventListener('click', ()=>{
+      const now = new Date();
+      const next = events.find(e=>e.endAt>now);
+      if(next) downloadICS([next], `vcs-${next.startAt.toISOString().slice(0,10)}.ics`);
+    });
+
+    render();
+  </script>
+</body>
+</html>
