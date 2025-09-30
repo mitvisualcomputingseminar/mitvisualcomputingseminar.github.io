@@ -3,145 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Visual Computing Seminar @ MIT CSAIL</title>
-  <meta name="description" content="Visual Computing Seminar at MIT — weekly on Tuesdays 12–1PM ET (mostly) at 32-463. Talks, calendar, about, and past speakers." />
-  <style>
-    :root{
-      --brick: #B94700;
-      --honey: #F0B323;
-      --blue:  #009CDE;
-      --gray:  #898D8D;
-      --light: #E9EAEA;
-      --ink:   #0C0C0C;
-      --paper: #FFFFFF;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--ink);
-      background: var(--paper);
-      line-height: 1.5;
-    }
-
-    a { color: var(--blue); text-decoration: none; }
-
-    /* Header */
-    header{
-      position: sticky; top:0; z-index: 50;
-      background: #000; color:#fff;
-      border-bottom: 1px solid #000;
-    }
-    .nav{ max-width: 1100px; margin: 0 auto; display:flex; align-items:center; gap:20px; padding:14px 20px; }
-    .logo{ font-weight: 900; letter-spacing: .2px; font-size: 1.02rem; display:flex; align-items:center; gap:.6rem; color:#fff; }
-    .nav a{ color: rgba(255,255,255,.92); text-decoration: none; font-weight: 600; }
-    .spacer{ flex:1 }
-    .nav .links{ display:flex; gap:16px; flex-wrap: wrap; align-items:center; }
-    .btn{ appearance: none; border: 2px solid var(--brick); background: var(--brick); color:#fff; padding:10px 14px; border-radius: 999px; font-weight:800; cursor:pointer; }
-    .btn:hover{ filter: brightness(.95); }
-    .btn.secondary{ background: transparent; border-color:#fff; color:#fff; }
-    .btn.secondary:hover{ background: rgba(255,255,255,.08); }
-    .btn:focus{ outline: 3px solid color-mix(in srgb, var(--honey) 45%, transparent); outline-offset: 2px; }
-
-    /* Hero */
-    .hero{ background: var(--paper); border-bottom: 1px solid var(--light); }
-    .hero-inner{ max-width:1100px; margin:0 auto; padding:64px 20px 40px; display:grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items:center; }
-    h1{ font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.1; margin: 0; }
-    .tag{ display:inline-flex; gap:.5rem; align-items:center; background: var(--honey); color:#231f00; border-radius:999px; padding:6px 10px; font-weight:900; letter-spacing:.3px; text-transform: uppercase; font-size:.75rem; }
-    .hero .meta{ margin-top: 14px; color: #404349; font-weight:650; }
-    .hero .cta{ display:flex; gap:12px; margin-top: 18px; flex-wrap: wrap; }
-    .hero-card{ background: #fff; border:1px solid var(--light); border-radius: 18px; padding:18px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
-    .hero-card h3{ margin:.2rem 0 .4rem; }
-
-    /* Sections */
-    section{ scroll-margin-top: 88px; }
-    .container{ max-width:1100px; margin:0 auto; padding: 44px 20px; }
-    .eyebrow{ text-transform: uppercase; letter-spacing: .18em; font-weight: 900; color: var(--brick); font-size: .78rem; }
-    h2{ font-size: clamp(1.6rem, 2.6vw, 2.2rem); margin:.35rem 0 1rem; }
-
-    /* Calendar */
-    .filterbar{ display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
-    .input{ border:1px solid var(--light); padding:10px 12px; border-radius: 12px; min-width: 220px; }
-    .tabs{ display:inline-flex; background: #F7F7F7; padding: 4px; border-radius: 12px; border:1px solid var(--light); }
-    .tab{ border:0; background: transparent; padding:8px 12px; border-radius: 10px; font-weight: 800; cursor:pointer; }
-    .tab[aria-selected="true"]{ background: #fff; border:1px solid var(--light); }
-
-    .monthbar{ display:flex; align-items:center; gap:10px; margin-top: 12px; }
-    .chip{ border:1px solid var(--light); padding:8px 12px; border-radius: 999px; font-weight:800; background:#fff; }
-    .arrow{ width:36px; height:36px; border-radius:10px; border:1px solid var(--light); background:#fff; display:grid; place-items:center; cursor:pointer; }
-
-    .list{ margin-top: 20px; }
-    .month{ border-top:2px solid #E2E2E2; padding-top: 12px; margin-top: 30px; }
-
-    /* Events */
-    .event{ display:grid; grid-template-columns: 110px 1fr; gap:14px; padding:14px 10px; border-radius:14px; border:1px solid var(--light); background: #fff; margin: 10px 0; align-items: start; }
-    .event .date{
-      position: relative;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      font-weight:900;
-      color:#fff;
-      background: linear-gradient(180deg, #8F2D00 0%, var(--brick) 60%, var(--honey) 160%); /* fallback when no photo */
-      border-radius: 12px;
-      padding: 10px 8px;
-      overflow: hidden;
-    }
-    .event .date .dow{ font-size:.78rem; opacity:.9; }
-    .event .date .day{ font-size:1.9rem; line-height:1; }
-
-    /* Photos */
-    .date-photo{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit: cover;
-      display:block;
-    }
-    .date.has-photo::after{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(145deg, rgba(0,0,0,.30), rgba(0,0,0,.10) 55%, rgba(0,0,0,0));
-    }
-    .date-overlay{ position: relative; z-index: 1; transition: opacity .18s ease, transform .18s ease; }
-    .date:hover .date-overlay{ opacity:0; transform: translateY(-2px); }
-
-    .event h4{ margin: 0; color: #111; }
-    .event .meta{ color: #4b4f56; font-weight:600; margin: 4px 0; }
-    .event .tags{ display:flex; gap:8px; flex-wrap:wrap; }
-    .pill{ font-size:.75rem; font-weight:900; padding:4px 8px; border-radius:999px; border:1px solid var(--light); background: #FAFAFA; }
-    .event .actions{ margin-top: 6px; display:flex; gap:8px; }
-
-    /* Calendar grid */
-    .calgrid{ margin-top: 16px; border:1px solid var(--light); border-radius: 14px; overflow:hidden; }
-    .calgrid .head, .calgrid .row{ display:grid; grid-template-columns: repeat(7, 1fr); }
-    .calgrid .head div{ background: #F7F7F7; padding:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; }
-    .cell{ min-height: 92px; border-top:1px solid var(--light); border-right:1px solid var(--light); padding:8px; position:relative; }
-    .cell:nth-child(7n){ border-right:0; }
-    .cell .d{ position:absolute; top:6px; right:8px; font-weight:800; font-size:.85rem; color: #6a6e73; }
-    .chip-event{ display:block; margin-top: 24px; border-left: 4px solid var(--brick); padding:6px 8px; background: #B94700; border-radius: 10px; box-shadow: 0 1px 0 rgba(0,0,0,.03); font-weight:800; font-size:.86rem; color:#fff; }
-
-    /* About */
-    .about p{ max-width: 70ch; }
-    .organizers{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
-    .card{ background:#fff; border:1px solid var(--light); border-radius: 16px; padding: 16px; }
-
-    .org-list{ display:grid; grid-template-columns: 1fr; gap: 10px; }
-    .org{ display:flex; align-items:center; gap: 10px; }
-    .avatar{ width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--light); background:#f2f2f2; font-size:0; }
-    .avatar-lg{ width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--light); background:#f2f2f2; font-size:0; }
-    .org-card-head{ display:flex; align-items:center; gap: 12px; }
-    .org-name{ font-weight: 900; }
-    .org-email{ color:#5b5f64; font-size:.92rem; }
-
-    footer{ margin-top: 40px; border-top:1px solid var(--light); }
-    footer .container{ display:flex; align-items:center; justify-content: space-between; gap: 10px; padding-top: 22px; padding-bottom: 22px; color: #5b5f64; font-size: .9rem; }
-
-    @media (max-width: 880px){
-      .hero-inner{ grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>MIT CSAIL Visual Computing Seminar</title>
+  <meta name="description" content="MIT Visual Computing Seminar — weekly on Tuesdays 12–1PM ET (mostly) at 32-463. Talks, calendar, about, and past speakers." />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
@@ -151,7 +15,7 @@
       <div class="links">
         <a href="#calendar">Calendar</a>
         <a href="#about">About</a>
-        <button class="btn secondary" id="download-ics">Add to Calendar</button>
+        <button class="btn secondary" id="download-ics">Download Calendar</button>
       </div>
     </nav>
   </header>
@@ -159,13 +23,12 @@
   <section class="hero" id="home">
     <div class="hero-inner">
       <div>
-        <span class="tag">New • 2025–26</span>
-        <h1>Visual Computing Seminar</h1>
+        <span class="tag">Fall 2025</span>
+        <h1>MIT Visual Computing Seminar</h1>
         <div class="meta">Tuesdays • 12:00–1:00 PM ET • 32-D463 Star Room, MIT CSAIL</div>
         <div class="cta">
           <a class="btn" href="#calendar">See upcoming talks</a>
           <a class="btn" target="_blank" rel="noopener" href="https://forms.gle/2kiZY5ae2jGbHY4X6">Sign up to give a talk</a>
-          <button class="btn secondary" id="add-next">Add next talk to calendar</button>
         </div>
       </div>
       <div class="hero-card" role="complementary" aria-label="Organizers">
@@ -189,6 +52,15 @@
           </div>
         </div>
         <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? Email us!</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="container">
+      <div id="nextTalkBar" class="nextbar" aria-live="polite">
+        <h3 style="margin: 16px 0 10px">Next talk</h3>
+        <div id="nextTalk"></div>
       </div>
     </div>
   </section>
@@ -225,7 +97,7 @@
       </div>
 
       <div id="listView" class="list" aria-live="polite"></div>
-      <div id="gridView" class="calgrid" hidden aria-live="polite"></div>
+      <div id="gridView" class="calgrid hide-weekends" hidden aria-live="polite"></div>
     </div>
   </section>
 
@@ -234,6 +106,25 @@
       <div>© <span id="year"></span> Visual Computing Seminar • MIT CSAIL</div>
     </div>
   </footer>
+
+  <!-- Event Modal -->
+  <div id="eventModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <button type="button" class="modal-close" aria-label="Close" data-close>✕</button>
+      <img class="modal-photo" alt="" hidden />
+      <h3 class="modal-title"></h3>
+      <div class="modal-meta">
+        <div class="modal-when"></div>
+        <div class="modal-where"></div>
+        <div class="modal-who"></div>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-add-ics" class="btn" type="button">Add to Calendar</button>
+        <a class="btn modal-recording" href="/">Recording</a>
+        <a class="btn modal-link" target="_blank" rel="noopener">Open link</a>
+      </div>
+    </div>
+  </div>
 
   <script>
     // Some helpers
@@ -282,7 +173,7 @@
 
     // We add seminars manually here
     const manual = [
-      { date: '2025-09-09', title: 'Kickoff Event', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
+      { date: '2025-09-09', title: 'Kickoff Event', location: '32-D463 Star Room', seminar: false, url: 'https://docs.google.com/presentation/d/1jppimjbEhUpKfYxHUp5sDO6RkALYHzPo4OGUqvYmr-A/edit?usp=sharing', photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
       { date: '2025-09-16', title: 'Coadjoint Orbits Preserving Fluid Simulation', speaker: 'Sina Nabizadeh', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://sinabiz.github.io/images/sina25.jpeg' },
       { date: '2025-09-23', title: 'Verified Scheduling for Optimizing High-Level Tensor Programs', speaker: 'Amanda Liu', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, short: true, photo: 'https://people.csail.mit.edu/lamanda/images/avatar.jpg' },
       { date: '2025-09-30', title: 'A Geometric View of Data Complexity: Efficient Local Intrinsic Dimension Estimation with Diffusion Models', speaker: 'Hamid Kamkari', affiliation: 'CSAIL', location: '32-D507', seminar: true, long: true, photo: 'https://hamidrezakmk.github.io/hamid.png' },
@@ -419,38 +310,7 @@
       monthBlock.className = 'month';
       monthBlock.innerHTML = `<h3 style="margin:0 0 12px">${fmtMonth.format(state.month)}</h3>`;
 
-      for(const ev of m){
-        const d = new Date(ev.startAt);
-        const end = new Date(ev.endAt);
-        const hasPhoto = ev.photo && ev.photo.trim() !== '';
-        const node = document.createElement('article');
-        node.className = 'event';
-        node.innerHTML = `
-          <div class="date ${hasPhoto ? 'has-photo' : ''}">
-            ${hasPhoto ? `<img class="date-photo" src="${ev.photo}" alt="${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}" />` : ''}
-            <div class="date-overlay">
-              <div class="dow">${fmtDow.format(d)}</div>
-              <div class="day">${d.getDate()}</div>
-            </div>
-          </div>
-          <div>
-            <h4>${ev.title}</h4>
-            <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
-            <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} · ${ev.location || locationName}</div>
-            ${ev.notes?`<div class="meta" style="margin-top:4px">${ev.notes}</div>`:''}
-            <div class="tags">
-              <span class="pill">Seminar</span>
-              ${ev.series?'<span class="pill" style="border-color:var(--honey)">Series</span>':''}
-              ${ev.long?'<span class="pill" style="border-color:var(--honey)">50 minutes</span>':''}
-              ${ev.short?'<span class="pill" style="border-color:var(--honey)">25 minutes</span>':''}
-            </div>
-            <div class="actions">
-              <button class="btn secondary" onclick='downloadICS([${JSON.stringify(ev)}], "visual-computing-seminar.ics")'>Add to Calendar</button>
-              ${ev.url?`<a class="btn" target="_blank" rel="noopener" href="${ev.url}">Details</a>`:''}
-            </div>
-          </div>`;
-        monthBlock.appendChild(node);
-      }
+      for(const ev of m){ monthBlock.appendChild(buildEventCard(ev)); }
       listView.appendChild(monthBlock);
     }
 
@@ -466,19 +326,25 @@
 
       const head = document.createElement('div');
       head.className = 'head';
-      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d =>{ const c=document.createElement('div'); c.textContent=d; head.appendChild(c); });
+      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d =>{ const c=document.createElement('div'); c.textContent=d; head.appendChild(c); });
       gridView.appendChild(head);
 
       const cells = document.createElement('div');
       cells.className = 'row';
       const totalCells = Math.ceil((startDow + daysInMonth)/7)*7;
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      let todayCell = null;
+
       for(let i=0;i<totalCells;i++){
         const cell = document.createElement('div');
         cell.className = 'cell';
         const dayNum = i - startDow + 1;
         if(dayNum>0 && dayNum<=daysInMonth){
-          cell.innerHTML = `<span class="d">${dayNum}</span>`;
           const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+          cell.setAttribute('data-date', dateStr);
+          cell.innerHTML = `<span class="d">${dayNum}</span>`;
+          if(dateStr === todayStr){ cell.classList.add('today'); todayCell = cell; }
           const todays = events.filter(ev=>{
             const ds = ev.startAt.toISOString().slice(0,10);
             return ds===dateStr && eventMatches(ev, state.q);
@@ -486,17 +352,24 @@
           for(const ev of todays){
             const d = new Date(ev.startAt);
             const end = new Date(ev.endAt);
-            const chip = document.createElement('a');
-            chip.href = '#calendar';
+            const chip = document.createElement('button');
+            chip.type = 'button';
             chip.className = 'chip-event';
-            chip.textContent = `${fmtTime.format(d)} ${ev.title}`;
-            chip.title = `${ev.speaker||''} ${ev.affiliation?('— '+ev.affiliation):''}\n${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} · ${ev.location||locationName}`;
+            chip.textContent = `${fmtTime.format(d)} ET ${ev.title}`;
+            const desc = `${ev.speaker||''} ${ev.affiliation?('— '+ev.affiliation):''}\n${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location||locationName}`;
+            chip.title = desc.trim();
+            chip.setAttribute('aria-label', `${ev.title} on ${fmt.format(d)} at ${fmtTime.format(d)} ET`);
+            chip.addEventListener('click', ()=> openEventModal(ev));
             cell.appendChild(chip);
           }
         }
         cells.appendChild(cell);
       }
       gridView.appendChild(cells);
+
+      // If showing the current month, scroll today's week into view
+      const isCurrentMonth = y===today.getFullYear() && m===today.getMonth();
+      if(isCurrentMonth && todayCell){ todayCell.scrollIntoView({behavior:'smooth', block:'center'}); }
     }
 
     function render(){
@@ -505,6 +378,87 @@
       } else {
         listView.hidden = true; gridView.hidden = false; renderGrid();
       }
+    }
+
+    // Simple modal to show event details
+    function openEventModal(ev){
+      const d = new Date(ev.startAt);
+      const end = new Date(ev.endAt);
+      const modal = document.getElementById('eventModal');
+      if(!modal) return;
+      modal.querySelector('.modal-title').textContent = ev.title || 'Seminar';
+      modal.querySelector('.modal-when').textContent = `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET`;
+      modal.querySelector('.modal-who').textContent = [ev.speaker, ev.affiliation].filter(Boolean).join(' — ');
+      const whereEl = modal.querySelector('.modal-where');
+      const loc = ev.location || locationName;
+      const mapsHref = 'https://www.google.com/maps?q=MIT+Building+32';
+      whereEl.innerHTML = `${loc} · <a href="${mapsHref}" target="_blank" rel="noopener">Map</a>`;
+      const photo = modal.querySelector('.modal-photo');
+      if(ev.photo){ photo.src = ev.photo; photo.hidden = false; } else { photo.hidden = true; }
+      const link = modal.querySelector('.modal-link');
+      if(ev.url){ link.href = ev.url; link.hidden = false; } else { link.hidden = true; }
+      const addBtn = modal.querySelector('#modal-add-ics');
+      addBtn.onclick = ()=> downloadICS([ev], `vcs-${ev.startAt.toISOString().slice(0,10)}.ics`);
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      // focus for accessibility
+      modal.querySelector('.modal-close').focus();
+    }
+
+    function closeEventModal(){
+      const modal = document.getElementById('eventModal');
+      if(!modal) return;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    // Modal interactions
+    (function attachModalHandlers(){
+      const modal = document.getElementById('eventModal');
+      if(!modal) return;
+      modal.addEventListener('click', (e)=>{
+        if(e.target === modal || e.target.hasAttribute('data-close')) closeEventModal();
+      });
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') closeEventModal();
+      });
+    })();
+
+    // Build a reusable event card node for list and next talk
+    function buildEventCard(ev){
+      const d = new Date(ev.startAt);
+      const end = new Date(ev.endAt);
+      const hasPhoto = ev.photo && ev.photo.trim() !== '';
+      const node = document.createElement('article');
+      node.className = 'event';
+      node.innerHTML = `
+        <div class="date ${hasPhoto ? 'has-photo' : ''}">
+          ${hasPhoto ? `<img class=\"date-photo\" src=\"${ev.photo}\" alt=\"${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}\" />` : ''}
+          <div class="date-overlay">
+            <div class="dow">${fmtDow.format(d)}</div>
+            <div class="day">${d.getDate()}</div>
+          </div>
+        </div>
+        <div>
+          <h4>${ev.title}</h4>
+          <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
+          <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a></div>
+          ${ev.notes?`<div class="meta" style="margin-top:4px">${ev.notes}</div>`:''}
+          <div class="tags">
+            <span class="pill">Seminar</span>
+            ${ev.series?'<span class="pill" style="border-color:var(--honey)">Series</span>':''}
+            ${ev.long?'<span class="pill" style="border-color:var(--honey)">50 minutes</span>':''}
+            ${ev.short?'<span class="pill" style="border-color:var(--honey)">25 minutes</span>':''}
+          </div>
+          <div class="actions">
+            <button class="btn add-ics-btn">Add to Calendar</button>
+            <a class="btn" href="/">Recording</a>
+            ${ev.url?`<a class="btn" target="_blank" rel="noopener" href="${ev.url}">Details</a>`:''}
+          </div>
+        </div>`;
+      const addIcs = node.querySelector('.actions .add-ics-btn');
+      if(addIcs){ addIcs.addEventListener('click', ()=> downloadICS([ev], 'visual-computing-seminar.ics')); }
+      return node;
     }
 
     // .ics download 
@@ -567,11 +521,24 @@
     $('#search').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
 
     $('#download-ics').addEventListener('click', ()=> downloadICS(events, 'visual-computing-seminar-series.ics'));
-    $('#add-next').addEventListener('click', ()=>{
+    const addNextBtn = $('#add-next');
+    if(addNextBtn){
+      addNextBtn.addEventListener('click', ()=>{
+        const now = new Date();
+        const next = events.find(e=>e.endAt>now);
+        if(next) downloadICS([next], `vcs-${next.startAt.toISOString().slice(0,10)}.ics`);
+      });
+    }
+
+    // Render Next Talk bar
+    (function renderNextTalk(){
       const now = new Date();
       const next = events.find(e=>e.endAt>now);
-      if(next) downloadICS([next], `vcs-${next.startAt.toISOString().slice(0,10)}.ics`);
-    });
+      const mount = document.getElementById('nextTalk');
+      if(!next || !mount) return;
+      mount.innerHTML = '';
+      mount.appendChild(buildEventCard(next));
+    })();
 
     render();
   </script>
