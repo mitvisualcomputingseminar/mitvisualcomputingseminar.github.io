@@ -10,12 +10,17 @@
 <body>
   <header>
     <nav class="nav" aria-label="Primary">
-      <div class="logo">Visual Computing Seminar</div>
+      <div class="hero-logos" aria-label="MIT and CSAIL logos">
+        <img src="assets/mit.png" alt="MIT logo" style="height: 40px;" />
+        <img src="assets/csail.png" alt="MIT CSAIL logo" />
+      </div> 
+      <!-- <div class="logo">MIT Visual Computing Seminar</div> -->
       <div class="spacer"></div>
       <div class="links">
         <a href="#calendar">Calendar</a>
         <a href="#about">About</a>
         <button class="btn secondary" id="download-ics">Download Calendar</button>
+        <button class="iconbtn" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">☀️</button>
       </div>
     </nav>
   </header>
@@ -51,7 +56,7 @@
             </div>
           </div>
         </div>
-        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? Email us!</p>
+        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? <a href="mailto:ktiwary@mit.edu,leticiam@mit.edu">Email us!</a>!</p>
       </div>
     </div>
   </section>
@@ -103,7 +108,7 @@
 
   <footer>
     <div class="container">
-      <div>© <span id="year"></span> Visual Computing Seminar • MIT CSAIL</div>
+      <div>© <span id="year"></span> Visual Computing Seminar • MIT CSAIL • <a href="https://accessibility.mit.edu/" target="_blank" rel="noopener">Accessibility</a></div>
     </div>
   </footer>
 
@@ -529,6 +534,32 @@
         if(next) downloadICS([next], `vcs-${next.startAt.toISOString().slice(0,10)}.ics`);
       });
     }
+
+    // Theme toggle (light/dark) with persistence
+    (function initTheme(){
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let theme = stored || (prefersDark ? 'dark' : 'light');
+      applyTheme(theme);
+      if(btn){
+        btn.addEventListener('click', ()=>{
+          theme = (root.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+          applyTheme(theme);
+          localStorage.setItem('theme', theme);
+        });
+      }
+      function applyTheme(t){
+        root.setAttribute('data-theme', t);
+        if(btn){
+          const isDark = t === 'dark';
+          btn.setAttribute('aria-pressed', String(isDark));
+          btn.textContent = isDark ? '🌙' : '☀️';
+          btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        }
+      }
+    })();
 
     // Render Next Talk bar
     (function renderNextTalk(){
