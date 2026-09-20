@@ -28,9 +28,9 @@
   <section class="hero" id="home">
     <div class="hero-inner">
       <div>
-        <span class="tag">Fall 2025</span>
+        <span class="tag">Fall 2026</span>
         <h1>MIT Visual Computing Seminar</h1>
-        <div class="meta">Tuesdays • 12:00–1:00 PM ET • 32-D463 Star Room, MIT CSAIL</div>
+        <div class="meta">Tuesdays, 12:00–1:00 PM ET<br />32-D463 Star Room, MIT CSAIL</div>
         <div class="cta">
           <a class="btn" href="#calendar">See upcoming talks</a>
         </div>
@@ -43,7 +43,7 @@
             <div>
               <div class="org-name">Nikhil Behari</div>
               <div class="org-email"><a href="mailto:nbehari@mit.edu">nbehari@mit.edu</a></div>
-              <div><a href="https://nikhilbehari.com/" target="_blank" rel="noopener">nikhilbehari.com</a></div>
+              <div class="org-site"><a href="https://nikhilbehari.com/" target="_blank" rel="noopener">nikhilbehari.com</a></div>
             </div>
           </div>
           <div class="org">
@@ -51,11 +51,11 @@
             <div>
               <div class="org-name">Ramya Muthukrishnan</div>
               <div class="org-email"><a href="mailto:ramyamut@mit.edu">ramyamut@mit.edu</a></div>
-              <div><a href="https://ramyamut.github.io/" target="_blank" rel="noopener">ramyamut.github.io</a></div>
+              <div class="org-site"><a href="https://ramyamut.github.io/" target="_blank" rel="noopener">ramyamut.github.io</a></div>
             </div>
           </div>
         </div>
-        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? <a href="mailto:nbehari@mit.edu,ramyamut@mit.edu">Email us!</a></p>
+        <p style="margin:18px 0 0; color:#5b5f64;">Have a suggestion? <a href="mailto:nbehari@mit.edu,ramyamut@mit.edu">Email us!</a></p>
       </div>
     </div>
   </section>
@@ -124,7 +124,7 @@
       </div>
       <div class="modal-actions">
         <button id="modal-add-ics" class="btn" type="button">Add to Calendar</button>
-        <a class="btn modal-recording" href="/">Recording</a>
+        <a class="btn modal-recording is-disabled" aria-disabled="true">Recording</a>
         <a class="btn modal-link" target="_blank" rel="noopener">Open link</a>
       </div>
     </div>
@@ -239,6 +239,7 @@
                 startAt, endAt,
                 location: m.location || t.location || locationName,
                 url: t.url || '',
+                recording: t.recording || '',
                 photo: t.photo || m.photo || '',
                 short: t.short ?? true,
                 long: t.long ?? false,
@@ -263,7 +264,7 @@
           else {
             const d = new Date(m.date + 'T16:00:00Z');
             const end = new Date(m.date + 'T17:00:00Z');
-            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || 'Special Talk', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', photo: m.photo||'', series:false});
+            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || 'Special Talk', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', recording: m.recording||'', photo: m.photo||'', series:false});
           }
         }
       }
@@ -404,6 +405,9 @@
       if(ev.photo){ photo.src = ev.photo; photo.hidden = false; } else { photo.hidden = true; }
       const link = modal.querySelector('.modal-link');
       if(ev.url){ link.href = ev.url; link.hidden = false; } else { link.hidden = true; }
+      const rec = modal.querySelector('.modal-recording');
+      if(ev.recording){ rec.href = ev.recording; rec.target = '_blank'; rec.rel = 'noopener'; rec.classList.remove('is-disabled'); rec.removeAttribute('aria-disabled'); }
+      else { rec.removeAttribute('href'); rec.classList.add('is-disabled'); rec.setAttribute('aria-disabled','true'); }
       const addBtn = modal.querySelector('#modal-add-ics');
       addBtn.onclick = ()=> downloadICS([ev], `vcs-${ev.startAt.toISOString().slice(0,10)}.ics`);
       modal.classList.add('open');
@@ -439,27 +443,29 @@
       const node = document.createElement('article');
       node.className = 'event';
       node.innerHTML = `
-        <div class="date ${hasPhoto ? 'has-photo' : ''}">
-          ${hasPhoto ? `<img class=\"date-photo\" src=\"${ev.photo}\" alt=\"${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}\" />` : ''}
-          <div class="date-overlay">
-            <div class="dow">${fmtDow.format(d)}</div>
-            <div class="day">${d.getDate()}</div>
+        <div class="side">
+          <div class="date ${hasPhoto ? 'has-photo' : ''}">
+            ${hasPhoto ? `<img class=\"date-photo\" src=\"${ev.photo}\" alt=\"${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}\" />` : ''}
+            <div class="date-overlay">
+              <div class="dow">${fmtDow.format(d)}</div>
+              <div class="day">${d.getDate()}</div>
+            </div>
           </div>
-        </div>
-        <div>
-          <h4>${ev.title}</h4>
-          <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
-          <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a></div>
-          ${ev.notes?`<div class="meta" style="margin-top:4px">${ev.notes}</div>`:''}
           <div class="tags">
             <span class="pill">Seminar</span>
             ${ev.series?'<span class="pill" style="border-color:var(--honey)">Series</span>':''}
             ${ev.long?'<span class="pill" style="border-color:var(--honey)">50 minutes</span>':''}
             ${ev.short?'<span class="pill" style="border-color:var(--honey)">25 minutes</span>':''}
           </div>
+        </div>
+        <div>
+          <h4>${ev.title}</h4>
+          <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
+          <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a></div>
+          ${ev.notes?`<div class="meta notes" style="margin-top:4px">${ev.notes}</div>`:''}
           <div class="actions">
             <button class="btn add-ics-btn">Add to Calendar</button>
-            <a class="btn" href="/">Recording</a>
+            ${ev.recording?`<a class="btn" target="_blank" rel="noopener" href="${ev.recording}">Recording</a>`:'<a class="btn is-disabled" aria-disabled="true">Recording</a>'}
             ${ev.url?`<a class="btn" target="_blank" rel="noopener" href="${ev.url}">Details</a>`:''}
           </div>
         </div>`;
