@@ -17,10 +17,17 @@
       <!-- <div class="logo">MIT Visual Computing Seminar</div> -->
       <div class="spacer"></div>
       <div class="links">
-        <a href="#calendar">Calendar</a>
         <a href="#about">About</a>
-        <button class="btn secondary" id="download-ics">Download Calendar</button>
-        <button class="iconbtn" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">☀️</button>
+        <a href="#calendar">Calendar</a>
+        <div class="nav-tools">
+          <button class="iconbtn" id="download-ics" type="button" aria-label="Download calendar (.ics)" title="Download calendar (.ics)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 18 4 4 4-4"/><path d="M16 2v4"/><path d="M18 14v8"/><path d="M21 11.354V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.343"/><path d="M3 10h18"/><path d="M8 2v4"/></svg>
+          </button>
+          <button class="iconbtn" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+        </div>
       </div>
     </nav>
   </header>
@@ -63,7 +70,7 @@
   <section id="next">
     <div class="container">
       <div id="nextTalkBar" class="nextbar" aria-live="polite">
-        <h3 style="margin: 16px 0 10px">Next talk</h3>
+        <h2 class="section-title">Next talk</h2>
         <div id="nextTalk"></div>
       </div>
     </div>
@@ -71,7 +78,7 @@
 
   <section id="about" class="about">
     <div class="container">
-      <div class="eyebrow">About</div>
+      <h2 class="section-title">About</h2>
       <p>
         The Visual Computing Seminar is a weekly gathering of Vision and Graphics researchers and enthusiasts. The seminar focuses mostly on internal speakers, and lunch is provided.
       </p>
@@ -83,8 +90,7 @@
 
   <section id="calendar">
     <div class="container">
-      <div class="eyebrow">Schedule</div>
-      <h2>Calendar</h2>
+      <h2 class="section-title">Calendar</h2>
       <div class="filterbar">
         <input class="input" id="search" placeholder="Keyword search (title, speaker, notes)…" aria-label="Keyword search" />
         <div class="tabs" role="tablist" aria-label="Calendar display">
@@ -564,7 +570,6 @@
         if(btn){
           const isDark = t === 'dark';
           btn.setAttribute('aria-pressed', String(isDark));
-          btn.textContent = isDark ? '🌙' : '☀️';
           btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
         }
       }
