@@ -144,9 +144,10 @@ section{ scroll-margin-top: 88px; }
 .event .tags{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
 .pill{ font-size:.75rem; font-weight:900; padding:4px 8px; border-radius:999px; border:1px solid var(--light); background: #FAFAFA; }
 [data-theme="dark"] .pill{ background:#1b1d1e; border-color:#2A2D2D; color:#e6e7e8; }
-.event .actions{ margin: 12px 0 2px; display:flex; gap:8px; }
-/* Action buttons: <button> and <a> share one font and size */
-.event .actions .btn, .modal-actions .btn{ font: inherit; font-size: .85rem; font-weight: 800; line-height: 1.2; padding: 8px 18px; }
+.event .actions{ margin: 12px 0 2px; display:flex; gap:8px; flex-wrap:wrap; }
+/* Action buttons */
+.event .actions .btn, .modal-actions .btn{ display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; font: inherit; font-size: .85rem; font-weight: 800; line-height: 1.2; padding: 8px 18px; }
+.event .actions .btn[hidden], .modal-actions .btn[hidden]{ display:none; }
 .btn.is-disabled{ background:#EEEFEF; border-color:#EEEFEF; color:#9A9EA3; cursor: not-allowed; }
 .btn.is-disabled:hover{ filter: none; }
 [data-theme="dark"] .btn.is-disabled{ background:#1F2122; border-color:#1F2122; color:#6B7075; }
@@ -190,10 +191,6 @@ footer{ margin-top: 40px; border-top:1px solid var(--light); }
 footer .container{ display:flex; align-items:center; justify-content: space-between; gap: 10px; padding-top: 22px; padding-bottom: 22px; color: #5b5f64; font-size: .9rem; }
 [data-theme="dark"] footer .container{ color:#aeb3b8; }
 
-@media (max-width: 880px){
-  .hero-inner{ grid-template-columns: 1fr; }
-}
-
 /* Hide weekends and widen Tuesday */
 .calgrid.hide-weekends .head div:nth-child(6),
 .calgrid.hide-weekends .head div:nth-child(7){ display:none; }
@@ -213,3 +210,10 @@ footer .container{ display:flex; align-items:center; justify-content: space-betw
 .modal-meta{ color:#4b4f56; font-weight:600; display:grid; gap:4px; margin-bottom: 8px; }
 .modal-actions{ display:flex; gap:8px; margin-top: 14px; flex-wrap: wrap; }
 
+/* Responsive */
+@media (max-width: 880px){
+  .hero-inner{ grid-template-columns: 1fr; }
+}
+@media (max-width: 640px){
+  .wide-only{ display:none !important; }
+}
