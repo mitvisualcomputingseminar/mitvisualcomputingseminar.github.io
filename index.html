@@ -39,23 +39,23 @@
         <h3>Organizers</h3>
         <div class="org-list">
           <div class="org">
-            <img class="avatar" src="https://www.kushagratiwary.com/images/kush.jpeg" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Kush Tiwary" />
+            <img class="avatar" src="assets/nikhil.webp" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Nikhil Behari" />
             <div>
-              <div class="org-name">Kush Tiwary</div>
-              <div class="org-email"><a href="mailto:ktiwary@mit.edu">ktiwary@mit.edu</a></div>
-              <div><a href="https://www.kushagratiwary.com/" target="_blank" rel="noopener">kushagratiwary.com</a></div>
+              <div class="org-name">Nikhil Behari</div>
+              <div class="org-email"><a href="mailto:nbehari@mit.edu">nbehari@mit.edu</a></div>
+              <div><a href="https://nikhilbehari.com/" target="_blank" rel="noopener">nikhilbehari.com</a></div>
             </div>
           </div>
           <div class="org">
-            <img class="avatar" src="https://lmattos.com/figures/profile.png" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Leticia Mattos Da Silva" />
+            <img class="avatar" src="assets/ramya.webp" referrerpolicy="no-referrer" decoding="async" loading="lazy" alt="Photo of Ramya Muthukrishnan" />
             <div>
-              <div class="org-name">Leticia Mattos Da Silva</div>
-              <div class="org-email"><a href="mailto:leticiam@mit.edu">leticiam@mit.edu</a></div>
-              <div><a href="https://lmattos.com/" target="_blank" rel="noopener">lmattos.com</a></div>
+              <div class="org-name">Ramya Muthukrishnan</div>
+              <div class="org-email"><a href="mailto:ramyamut@mit.edu">ramyamut@mit.edu</a></div>
+              <div><a href="https://ramyamut.github.io/" target="_blank" rel="noopener">ramyamut.github.io</a></div>
             </div>
           </div>
         </div>
-        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? <a href="mailto:ktiwary@mit.edu,leticiam@mit.edu">Email us!</a></p>
+        <p style="margin-top:10px; color:#5b5f64;">Have a suggestion? <a href="mailto:nbehari@mit.edu,ramyamut@mit.edu">Email us!</a></p>
       </div>
     </div>
   </section>
@@ -209,6 +209,7 @@
       { date: '2026-04-14', title: 'From Measurements to Structure: Annotation-Free Acquisition of Symbolic Geometry', speaker: 'Aditya Ganeshan', affiliation: 'Brown University', location: '32-D463 Star Room', seminar: true, long: true , photo: 'https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Aw1Sb4gAAAAJ&citpid=3'},
       { date: '2026-04-21', title: 'TBA', speaker: 'Raphi Kang', affiliation: 'Caltech', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=49_WjdIAAAAJ&citpid=2' },
       { date: '2026-04-28', title: 'Geometry and Mechanics of Fluid Surfaces', speaker: 'Cuncheng Zhu', affiliation: 'UCSD', location: '32-370', seminar: true, long: true , photo: 'https://cunchengzhu.github.io/assets/images/profile.jpg'},
+      { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
     ];
 
     function applyManual(base){
@@ -490,7 +491,8 @@
         lines.push(`DTSTART:${toICSDate(ev.startAt)}`);
         lines.push(`DTEND:${toICSDate(ev.endAt)}`);
         lines.push(`SUMMARY:${escapeICS(ev.title)}`);
-        const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, ev.notes].filter(Boolean);
+        const plainNotes = String(ev.notes||'').replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '$2 ($1)').replace(/<[^>]+>/g, ''); // notes may contain links
+        const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, plainNotes].filter(Boolean);
         lines.push(`DESCRIPTION:${escapeICS(descParts.join(' — '))}`);
         lines.push(`LOCATION:${escapeICS(ev.location || locationName)}`);
         if(ev.url) lines.push(`URL:${ev.url}`);
