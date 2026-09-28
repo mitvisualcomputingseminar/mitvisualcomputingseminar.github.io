@@ -152,6 +152,13 @@
     const fmtDow = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
     const fmtTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: tz });
 
+    // Noon in New York on a YYYY-MM-DD date, on either side of daylight saving
+    function noonET(ymd){
+      const guess = new Date(ymd + 'T16:00:00Z');
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hourCycle: 'h23' }).format(guess));
+      return new Date(guess.getTime() + (12 - hour) * 3600e3);
+    }
+
     // Set up a recurring seminar series every Tuesday by default
     function generateTuesdays(start = new Date(), count = 16){
       const events = [];
@@ -164,8 +171,8 @@
       for(let i=0;i<count;i++){
         const d = new Date(first);
         d.setDate(first.getDate() + i*7);
-        const startAt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 16, 0)); // 12:00 ET ≈ 16:00 UTC
-        const endAt   = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 17, 0)); // 1 hour
+        const startAt = noonET(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+        const endAt   = new Date(startAt.getTime() + 3600e3);
         events.push({
           id: `auto-${d.toISOString().slice(0,10)}`,
           title: 'TBA',
@@ -218,6 +225,8 @@
       { date: '2026-04-21', title: 'TBA', speaker: 'Raphi Kang', affiliation: 'Caltech', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=49_WjdIAAAAJ&citpid=2' },
       { date: '2026-04-28', title: 'Geometry and Mechanics of Fluid Surfaces', speaker: 'Cuncheng Zhu', affiliation: 'UCSD', location: '32-370', seminar: true, long: true , photo: 'https://cunchengzhu.github.io/assets/images/profile.jpg'},
       { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
+      { date: '2026-09-29', cancelled: true },
+      { date: '2026-10-13', speaker: 'Laura Dodds', affiliation: 'Signal Kinetics Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://laura-dodds.github.io', scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ', photo: 'assets/speakers/laura-dodds.webp' },
     ];
 
     function applyManual(base){
@@ -235,8 +244,9 @@
               const [sh, sm] = (t.start || '12:00').split(':').map(Number);
               const [eh, em] = (t.end   || '12:25').split(':').map(Number);
 
-              const startAt = new Date(`${m.date}T${String(sh+4).padStart(2,'0')}:${String(sm).padStart(2,'0')}:00Z`);
-              const endAt   = new Date(`${m.date}T${String(eh+4).padStart(2,'0')}:${String(em).padStart(2,'0')}:00Z`);
+              const noon = noonET(m.date).getTime();
+              const startAt = new Date(noon + ((sh-12)*60 + sm) * 60e3);
+              const endAt   = new Date(noon + ((eh-12)*60 + em) * 60e3);
 
               const ev = {
                 id: `multi-${m.date}-${sh}${sm}`,
@@ -247,6 +257,8 @@
                 startAt, endAt,
                 location: m.location || t.location || locationName,
                 url: t.url || '',
+                site: t.site || '',
+                scholar: t.scholar || '',
                 recording: t.recording || '',
                 photo: t.photo || m.photo || '',
                 short: t.short ?? true,
@@ -270,9 +282,9 @@
           const ev = byDate.get(m.date);
           if(ev){ Object.assign(ev, m); }
           else {
-            const d = new Date(m.date + 'T16:00:00Z');
-            const end = new Date(m.date + 'T17:00:00Z');
-            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || 'Special Talk', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', recording: m.recording||'', photo: m.photo||'', series:false});
+            const d = noonET(m.date);
+            const end = new Date(d.getTime() + 3600e3);
+            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || '', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', site: m.site||'', scholar: m.scholar||'', recording: m.recording||'', photo: m.photo||'', series:false});
           }
         }
       }
@@ -294,7 +306,8 @@
     const state = {
       view: 'list',
       month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      q: ''
+      q: '',
+      limit: 4
     };
 
     const listView = $('#listView');
@@ -308,26 +321,53 @@
       return [ev.title, ev.speaker, ev.affiliation, ev.notes].filter(Boolean).some(s => String(s).toLowerCase().includes(q));
     }
 
-    function monthEvents(monthDate){
-      const m = monthDate.getMonth(), y = monthDate.getFullYear();
-      return events.filter(ev => {
-        const d = new Date(ev.startAt);
-        return d.getMonth()===m && d.getFullYear()===y && eventMatches(ev, state.q);
-      });
+    // A talk known only by its speaker leads with the speaker, then the affiliation;
+    // mark (the speaker's link icons) follows the speaker's name wherever it lands
+    function talkLabel(ev, mark = ''){
+      if(ev.cancelled) return { head: 'No seminar this week', sub: '' };
+      const title = ev.title && ev.title !== 'TBA' ? ev.title : '';
+      const speaker = ev.speaker && ev.speaker !== 'TBA' ? ev.speaker + mark : '';
+      if(title) return { head: title, sub: [speaker, ev.affiliation].filter(Boolean).join(' • ') };
+      return { head: speaker || 'TBA', sub: speaker ? (ev.affiliation || '') : '' };
+    }
+
+    const linkIcons = {
+      site:    { label: 'Website', svg: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>' },
+      scholar: { label: 'Google Scholar', svg: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>' },
+    };
+    function speakerLinks(ev){
+      const links = Object.entries(linkIcons).filter(([key]) => ev[key]).map(([key, {label, svg}]) =>
+        `<a href="${ev[key]}" target="_blank" rel="noopener" title="${label}" aria-label="${ev.speaker} on ${label}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${svg}</svg></a>`);
+      return links.length ? `<span class="speaker-links">${links.join('')}</span>` : '';
     }
 
     function renderList(){
       listView.innerHTML = '';
-      const m = monthEvents(state.month);
-      $('#rangeLabel').textContent = rangeLabel();
-      if(m.length===0){ listView.innerHTML = `<p style="color:var(--muted)">No talks this month. Try another month or clear search.</p>`; return; }
+      let shown = [], more = false;
+      if(state.q){
+        shown = events.filter(ev => eventMatches(ev, state.q));
+      } else {
+        const now = new Date();
+        const upcoming = events.filter(ev => ev.endAt > now);
+        let talks = 0;
+        for(const ev of upcoming){
+          if(talks === state.limit) break;
+          shown.push(ev);
+          if(!ev.cancelled) talks++;
+        }
+        more = shown.length < upcoming.length;
+      }
+      if(shown.length===0){ listView.innerHTML = `<p style="color:var(--muted)">${state.q ? 'No talks match your search.' : 'No upcoming talks yet.'}</p>`; return; }
 
-      const monthBlock = document.createElement('div');
-      monthBlock.className = 'month';
-      monthBlock.innerHTML = `<h3 style="margin:0 0 12px">${fmtMonth.format(state.month)}</h3>`;
-
-      for(const ev of m){ monthBlock.appendChild(buildEventCard(ev)); }
-      listView.appendChild(monthBlock);
+      for(const ev of shown){ listView.appendChild(buildEventCard(ev)); }
+      if(more){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn secondary more';
+        btn.textContent = 'Show more';
+        btn.addEventListener('click', ()=>{ state.limit += 4; render(); });
+        listView.appendChild(btn);
+      }
     }
 
     function renderGrid(){
@@ -370,11 +410,12 @@
             const end = new Date(ev.endAt);
             const chip = document.createElement('button');
             chip.type = 'button';
-            chip.className = 'chip-event';
-            chip.textContent = `${fmtTime.format(d)} ET ${ev.title}`;
+            const label = talkLabel(ev);
+            chip.className = ev.cancelled ? 'chip-event off' : 'chip-event';
+            chip.textContent = ev.cancelled ? 'No seminar' : `${fmtTime.format(d)} ET ${label.head}`;
             const desc = `${ev.speaker||''} ${ev.affiliation?('— '+ev.affiliation):''}\n${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location||locationName}`;
             chip.title = desc.trim();
-            chip.setAttribute('aria-label', `${ev.title} on ${fmt.format(d)} at ${fmtTime.format(d)} ET`);
+            chip.setAttribute('aria-label', `${label.head} on ${fmt.format(d)} at ${fmtTime.format(d)} ET`);
             chip.addEventListener('click', ()=> openEventModal(ev));
             cell.appendChild(chip);
           }
@@ -389,6 +430,7 @@
     }
 
     function render(){
+      $('.monthbar').hidden = state.view === 'list';
       if(state.view==='list'){
         listView.hidden = false; gridView.hidden = true; renderList();
       } else {
@@ -402,13 +444,15 @@
       const end = new Date(ev.endAt);
       const modal = document.getElementById('eventModal');
       if(!modal) return;
-      modal.querySelector('.modal-title').textContent = ev.title || 'Seminar';
-      modal.querySelector('.modal-when').textContent = `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET`;
-      modal.querySelector('.modal-who').textContent = [ev.speaker, ev.affiliation].filter(Boolean).join(' — ');
+      const label = talkLabel(ev, speakerLinks(ev));
+      modal.querySelector('.modal-title').innerHTML = label.head;
+      modal.querySelector('.modal-when').textContent = ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET`;
+      modal.querySelector('.modal-who').innerHTML = label.sub;
       const whereEl = modal.querySelector('.modal-where');
       const loc = ev.location || locationName;
       const mapsHref = 'https://www.google.com/maps?q=MIT+Building+32';
       whereEl.innerHTML = `${loc} · <a href="${mapsHref}" target="_blank" rel="noopener">Map</a>`;
+      whereEl.hidden = !!ev.cancelled;
       const photo = modal.querySelector('.modal-photo');
       if(ev.photo){ photo.src = ev.photo; photo.hidden = false; } else { photo.hidden = true; }
       const link = modal.querySelector('.modal-link');
@@ -418,6 +462,7 @@
       else { rec.removeAttribute('href'); rec.classList.add('is-disabled'); rec.setAttribute('aria-disabled','true'); }
       const addBtn = modal.querySelector('#modal-add-ics');
       addBtn.onclick = ()=> downloadICS([ev], `vcs-${ev.startAt.toISOString().slice(0,10)}.ics`);
+      addBtn.hidden = rec.hidden = !!ev.cancelled;
       modal.classList.add('open');
       modal.setAttribute('aria-hidden','false');
       // focus for accessibility
@@ -449,33 +494,34 @@
       const end = new Date(ev.endAt);
       const hasPhoto = ev.photo && ev.photo.trim() !== '';
       const node = document.createElement('article');
-      node.className = 'event';
+      const label = talkLabel(ev, speakerLinks(ev));
+      node.className = ev.cancelled ? 'event off' : 'event';
       node.innerHTML = `
         <div class="side">
           <div class="date ${hasPhoto ? 'has-photo' : ''}">
-            ${hasPhoto ? `<img class=\"date-photo\" src=\"${ev.photo}\" alt=\"${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}\" />` : ''}
+            ${hasPhoto ? `<img class="date-photo" src="${ev.photo}" alt="${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}" />` : ''}
             <div class="date-overlay">
               <div class="dow">${fmtDow.format(d)}</div>
               <div class="day">${d.getDate()}</div>
             </div>
           </div>
-          <div class="tags">
+          ${ev.cancelled ? '' : `<div class="tags">
             <span class="pill">Seminar</span>
             ${ev.series?'<span class="pill" style="border-color:var(--honey)">Series</span>':''}
             ${ev.long?'<span class="pill" style="border-color:var(--honey)">50 minutes</span>':''}
             ${ev.short?'<span class="pill" style="border-color:var(--honey)">25 minutes</span>':''}
-          </div>
+          </div>`}
         </div>
         <div>
-          <h4>${ev.title}</h4>
-          <div class="meta">${ev.speaker || ''}${ev.affiliation?` •  ${ev.affiliation}`:''}</div>
-          <div class="meta">${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a></div>
+          <h4>${label.head}</h4>
+          ${label.sub ? `<div class="meta">${label.sub}</div>` : ''}
+          <div class="meta">${ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a>`}</div>
           ${ev.notes?`<div class="meta notes" style="margin-top:4px">${ev.notes}</div>`:''}
-          <div class="actions">
+          ${ev.cancelled ? '' : `<div class="actions">
             <button class="btn add-ics-btn">Add to Calendar</button>
             ${ev.recording?`<a class="btn" target="_blank" rel="noopener" href="${ev.recording}">Recording</a>`:'<a class="btn is-disabled" aria-disabled="true">Recording</a>'}
             ${ev.url?`<a class="btn" target="_blank" rel="noopener" href="${ev.url}">Details</a>`:''}
-          </div>
+          </div>`}
         </div>`;
       const addIcs = node.querySelector('.actions .add-ics-btn');
       if(addIcs){ addIcs.addEventListener('click', ()=> downloadICS([ev], 'visual-computing-seminar.ics')); }
@@ -504,7 +550,7 @@
         lines.push(`DTSTAMP:${toICSDate(new Date())}`);
         lines.push(`DTSTART:${toICSDate(ev.startAt)}`);
         lines.push(`DTEND:${toICSDate(ev.endAt)}`);
-        lines.push(`SUMMARY:${escapeICS(ev.title)}`);
+        lines.push(`SUMMARY:${escapeICS(talkLabel(ev).head)}`);
         const plainNotes = String(ev.notes||'').replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '$2 ($1)').replace(/<[^>]+>/g, ''); // notes may contain links
         const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, plainNotes].filter(Boolean);
         lines.push(`DESCRIPTION:${escapeICS(descParts.join(' — '))}`);
@@ -542,7 +588,7 @@
 
     $('#search').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
 
-    $('#download-ics').addEventListener('click', ()=> downloadICS(events, 'visual-computing-seminar-series.ics'));
+    $('#download-ics').addEventListener('click', ()=> downloadICS(events.filter(e=>!e.cancelled), 'visual-computing-seminar-series.ics'));
     const addNextBtn = $('#add-next');
     if(addNextBtn){
       addNextBtn.addEventListener('click', ()=>{
@@ -580,7 +626,7 @@
     // Render Next Talk bar
     (function renderNextTalk(){
       const now = new Date();
-      const next = events.find(e=>e.endAt>now);
+      const next = events.find(e=>e.endAt>now && !e.cancelled);
       const mount = document.getElementById('nextTalk');
       if(!next || !mount) return;
       mount.innerHTML = '';
