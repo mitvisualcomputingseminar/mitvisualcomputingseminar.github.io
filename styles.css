@@ -127,7 +127,7 @@ section{ scroll-margin-top: 88px; }
   padding: 8px;
   overflow: hidden;
 }
-.event .date .dow{ font-size:.78rem; opacity:.9; }
+.event .date .mon{ font-size:.78rem; opacity:.9; }
 .event .date .day{ font-size:1.9rem; line-height:1; }
 
 /* Photos */
@@ -141,7 +141,7 @@ section{ scroll-margin-top: 88px; }
 /* On a photo the date shrinks to a corner chip so it never covers a face */
 .event .date.has-photo{ place-items: end start; padding: 6px; }
 .event .date.has-photo .date-overlay{ display:flex; gap:4px; align-items:baseline; padding:2px 7px; border-radius:6px; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-.event .date.has-photo .dow{ font-size:.68rem; opacity:1; }
+.event .date.has-photo .mon{ font-size:.68rem; opacity:1; }
 .event .date.has-photo .day{ font-size:.8rem; }
 
 .event h4{ margin: 0; color: #111; }

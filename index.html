@@ -149,7 +149,7 @@
     // Format stuff
     const fmt = new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
     const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
-    const fmtDow = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
+    const fmtMon = new Intl.DateTimeFormat(undefined, { month: 'short' });
     const fmtTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: tz });
 
     // Noon in New York on a YYYY-MM-DD date, on either side of daylight saving
@@ -227,6 +227,7 @@
       { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
       { date: '2026-09-29', cancelled: true },
       { date: '2026-10-13', speaker: 'Laura Dodds', affiliation: 'Signal Kinetics Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://laura-dodds.github.io', scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ', photo: 'assets/speakers/laura-dodds.webp' },
+      { date: '2026-10-20', speaker: 'Sebo Diaz', affiliation: 'Medical Vision Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sebo.sh', scholar: 'https://scholar.google.com/citations?user=NIU3SBUAAAAJ', photo: 'assets/speakers/sebo-diaz.webp' },
     ];
 
     function applyManual(base){
@@ -501,7 +502,7 @@
           <div class="date ${hasPhoto ? 'has-photo' : ''}">
             ${hasPhoto ? `<img class="date-photo" src="${ev.photo}" alt="${ev.speaker ? `Photo of ${ev.speaker}` : 'Speaker photo'}" />` : ''}
             <div class="date-overlay">
-              <div class="dow">${fmtDow.format(d)}</div>
+              <div class="mon">${fmtMon.format(d)}</div>
               <div class="day">${d.getDate()}</div>
             </div>
           </div>
