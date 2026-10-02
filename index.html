@@ -159,6 +159,12 @@
       return new Date(guess.getTime() + (12 - hour) * 3600e3);
     }
 
+    // A clock time (HH:MM, Eastern) on a YYYY-MM-DD date
+    function atET(ymd, hhmm){
+      const [h, m] = hhmm.split(':').map(Number);
+      return new Date(noonET(ymd).getTime() + ((h-12)*60 + m) * 60e3);
+    }
+
     // Set up a recurring seminar series every Tuesday by default
     function generateTuesdays(start = new Date(), count = 16){
       const events = [];
@@ -226,9 +232,10 @@
       { date: '2026-04-28', title: 'Geometry and Mechanics of Fluid Surfaces', speaker: 'Cuncheng Zhu', affiliation: 'UCSD', location: '32-370', seminar: true, long: true , photo: 'https://cunchengzhu.github.io/assets/images/profile.jpg'},
       { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
       { date: '2026-09-29', cancelled: true },
+      { date: '2026-10-06', speaker: 'Tzofi Klinghoffer', affiliation: 'Camera Culture Group, MIT', start: '12:15', location: '32-G449 Kiva Room', seminar: true, site: 'https://www.tzofi.com', scholar: 'https://scholar.google.com/citations?user=U-h-AxUAAAAJ', photo: 'assets/speakers/tzofi-klinghoffer.webp' },
       { date: '2026-10-13', speaker: 'Laura Dodds', affiliation: 'Signal Kinetics Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://laura-dodds.github.io', scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ', photo: 'assets/speakers/laura-dodds.webp' },
       { date: '2026-10-20', speaker: 'Sebo Diaz', affiliation: 'Medical Vision Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sebo.sh', scholar: 'https://scholar.google.com/citations?user=NIU3SBUAAAAJ', photo: 'assets/speakers/sebo-diaz.webp' },
-      { date: '2026-10-27', speaker: 'David Dai', affiliation: 'Multisensory Intelligence Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://dd.works', scholar: 'https://scholar.google.com/citations?user=N1x7v90AAAAJ', photo: 'assets/speakers/david-dai.webp' },
+      { date: '2026-10-27', speaker: 'David Dai', affiliation: 'Multisensory Intelligence Group, MIT', location: '32-D507', seminar: true, site: 'https://dd.works', scholar: 'https://scholar.google.com/citations?user=N1x7v90AAAAJ', photo: 'assets/speakers/david-dai.webp' },
       { date: '2026-12-08', speaker: 'Siddharth Somasundaram', affiliation: 'Camera Culture Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sidsoma.com', scholar: 'https://scholar.google.com/citations?user=WnLfhFQAAAAJ', photo: 'assets/speakers/siddharth-somasundaram.webp' },
     ];
 
@@ -245,11 +252,9 @@
             for(const t of m.talks){
 
               const [sh, sm] = (t.start || '12:00').split(':').map(Number);
-              const [eh, em] = (t.end   || '12:25').split(':').map(Number);
 
-              const noon = noonET(m.date).getTime();
-              const startAt = new Date(noon + ((sh-12)*60 + sm) * 60e3);
-              const endAt   = new Date(noon + ((eh-12)*60 + em) * 60e3);
+              const startAt = atET(m.date, t.start || '12:00');
+              const endAt   = atET(m.date, t.end   || '12:25');
 
               const ev = {
                 id: `multi-${m.date}-${sh}${sm}`,
@@ -282,13 +287,16 @@
           }
 
           // Single event override path
-          const ev = byDate.get(m.date);
+          let ev = byDate.get(m.date);
           if(ev){ Object.assign(ev, m); }
           else {
             const d = noonET(m.date);
             const end = new Date(d.getTime() + 3600e3);
-            byDate.set(m.date, { id: `extra-${m.date}`, title: m.title || '', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', site: m.site||'', scholar: m.scholar||'', recording: m.recording||'', photo: m.photo||'', series:false});
+            ev = { id: `extra-${m.date}`, title: m.title || '', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', site: m.site||'', scholar: m.scholar||'', recording: m.recording||'', photo: m.photo||'', series:false};
+            byDate.set(m.date, ev);
           }
+          if(m.start) ev.startAt = atET(m.date, m.start);
+          if(m.end) ev.endAt = atET(m.date, m.end);
         }
       }
 
