@@ -14,7 +14,6 @@
         <img class="wide-only" src="assets/mit.png" alt="MIT logo" style="height: 40px;" />
         <img src="assets/csail.png" alt="MIT CSAIL logo" />
       </div> 
-      <!-- <div class="logo">MIT Visual Computing Seminar</div> -->
       <div class="spacer"></div>
       <div class="links">
         <a class="wide-only" href="#about">About</a>
@@ -119,7 +118,6 @@
     </div>
   </footer>
 
-  <!-- Event Modal -->
   <div id="eventModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <button type="button" class="modal-close" aria-label="Close" data-close>✕</button>
@@ -141,14 +139,12 @@
 
   <script src="talks.js"></script>
   <script>
-    // Some helpers
     const $ = (sel, el=document) => el.querySelector(sel);
     const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
 
     const tz = 'America/New_York';
     const locationName = '32-D463 Star Room';
 
-    // Format stuff
     const fmt = new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
     const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
     const fmtMon = new Intl.DateTimeFormat(undefined, { month: 'short' });
@@ -167,32 +163,17 @@
       return new Date(noonET(ymd).getTime() + ((h-12)*60 + m) * 60e3);
     }
 
-    // Set up a recurring seminar series every Tuesday by default
-    function generateTuesdays(start = new Date(), count = 16){
-      const events = [];
+    // TBA placeholders for the coming Tuesdays
+    function generateTuesdays(start, count){
       const first = new Date(start);
-      // Move to next Tuesday
-      const day = first.getDay(); // Sunday=0
-      const delta = (2 - day + 7) % 7;
-      if (delta !== 0) first.setDate(first.getDate() + delta);
-
+      first.setDate(first.getDate() + (2 - first.getDay() + 7) % 7);
+      const events = [];
       for(let i=0;i<count;i++){
         const d = new Date(first);
         d.setDate(first.getDate() + i*7);
-        const startAt = noonET(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
-        const endAt   = new Date(startAt.getTime() + 3600e3);
-        events.push({
-          id: `auto-${d.toISOString().slice(0,10)}`,
-          title: 'TBA',
-          speaker: 'TBA',
-          affiliation: '',
-          notes: '',
-          startAt, endAt,
-          location: locationName,
-          url: '',
-          photo: '',
-          series: '',
-        });
+        const ymd = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const startAt = noonET(ymd);
+        events.push({ id: `auto-${ymd}`, title: 'TBA', speaker: 'TBA', startAt, endAt: new Date(startAt.getTime() + 3600e3), location: locationName });
       }
       return events;
     }
@@ -200,79 +181,35 @@
     // Fill the generated Tuesdays with the entries in talks.js
     function applyTalks(base){
       const byDate = new Map(base.map(ev => [ev.startAt.toISOString().slice(0,10), ev]));
-
       for(const m of talks){
         if(m.skip){ byDate.delete(m.date); continue; }
-
-        if(m.date){
-          // if a date declares multiple talks, replace that day with separate events
-          if (Array.isArray(m.talks) && m.talks.length){
-            byDate.delete(m.date); // remove the auto placeholder
-            for(const t of m.talks){
-
-              const [sh, sm] = (t.start || '12:00').split(':').map(Number);
-
-              const startAt = atET(m.date, t.start || '12:00');
-              const endAt   = atET(m.date, t.end   || '12:25');
-
-              const ev = {
-                id: `multi-${m.date}-${sh}${sm}`,
-                title: t.title || 'TBA',
-                speaker: t.speaker || '',
-                affiliation: t.affiliation || '',
-                notes: t.notes || '',
-                startAt, endAt,
-                location: m.location || t.location || locationName,
-                url: t.url || '',
-                site: t.site || '',
-                scholar: t.scholar || '',
-                abstract: t.abstract || '',
-                bio: t.bio || '',
-                recording: t.recording || '',
-                photo: t.photo || m.photo || '',
-                short: t.short ?? true,
-                long: t.long ?? false,
-                series: !!m.series,
-              };
-              // Store alongside others for that date
-              const bucket = byDate.get(m.date);
-              if(bucket){ // shouldn't happen since we deleted, but just in case
-                if(Array.isArray(bucket)) bucket.push(ev); else byDate.set(m.date, [bucket, ev]);
-              } else {
-                // use an array to support multiple events for that key during sorting step
-                byDate.set(m.date, [ev]);
-              }
-            }
-            continue;
-          }
-
-          // Single event: the entry's fields fill in the Tuesday placeholder (or a new event off the generated weeks)
-          let ev = byDate.get(m.date);
-          if(!ev){
-            const startAt = noonET(m.date);
-            ev = { id: `extra-${m.date}`, startAt, endAt: new Date(startAt.getTime() + 3600e3), location: locationName };
-            byDate.set(m.date, ev);
-          }
-          Object.assign(ev, m);
-          if(m.start) ev.startAt = atET(m.date, m.start);
-          if(m.end) ev.endAt = atET(m.date, m.end);
+        if(m.talks){
+          byDate.set(m.date, m.talks.map(t => ({
+            short: true, ...t,
+            id: `multi-${m.date}-${t.start || '12:00'}`,
+            startAt: atET(m.date, t.start || '12:00'),
+            endAt: atET(m.date, t.end || '12:25'),
+            location: m.location || t.location || locationName,
+            photo: t.photo || m.photo || '',
+            series: !!m.series,
+          })));
+          continue;
         }
+        let ev = byDate.get(m.date);
+        if(!ev){
+          const startAt = noonET(m.date);
+          ev = { id: `extra-${m.date}`, startAt, endAt: new Date(startAt.getTime() + 3600e3), location: locationName };
+          byDate.set(m.date, ev);
+        }
+        Object.assign(ev, m);
+        if(m.start) ev.startAt = atET(m.date, m.start);
+        if(m.end) ev.endAt = atET(m.date, m.end);
       }
-
-      // Some entries may be arrays if multiple talks so we need to flatten
-      const flat = [];
-      for(const val of byDate.values()){
-        if(Array.isArray(val)) flat.push(...val); else flat.push(val);
-      }
-      return flat.sort((a,b)=>a.startAt-b.startAt);
+      return [...byDate.values()].flat().sort((a,b)=>a.startAt-b.startAt);
     }
 
+    const events = applyTalks(generateTuesdays(new Date(), 22));
 
-    // Build event data
-    const baseEvents = generateTuesdays(new Date(), 22); // tweak the window
-    const events = applyTalks(baseEvents);
-
-    // Calendar state and rendering
     const state = {
       view: 'list',
       month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -294,7 +231,7 @@
     // A talk known only by its speaker leads with the speaker, then the affiliation;
     // mark (the speaker's link icons) follows the name, or ends the speaker line under a title
     function talkLabel(ev, mark = ''){
-      if(ev.cancelled) return { head: 'No seminar this week', sub: '' };
+      if(ev.cancelled) return { head: 'No seminar', sub: typeof ev.cancelled === 'string' ? ev.cancelled : '' };
       const title = ev.title && ev.title !== 'TBA' ? ev.title : '';
       const speaker = ev.speaker && ev.speaker !== 'TBA' ? ev.speaker : '';
       if(title) return { head: title, sub: [speaker, ev.affiliation].filter(Boolean).join(' • ') + (speaker ? mark : '') };
@@ -414,7 +351,6 @@
       }
     }
 
-    // Simple modal to show event details
     function openEventModal(ev){
       const d = new Date(ev.startAt);
       const end = new Date(ev.endAt);
@@ -425,7 +361,7 @@
       modal.querySelector('.modal-when').textContent = ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET`;
       modal.querySelector('.modal-who').innerHTML = label.sub;
       const text = modal.querySelector('.modal-text');
-      text.innerHTML = talkText(ev);
+      text.innerHTML = (ev.notes ? `<p>${ev.notes}</p>` : '') + talkText(ev);
       text.hidden = !text.innerHTML;
       const whereEl = modal.querySelector('.modal-where');
       const loc = ev.location || locationName;
@@ -444,7 +380,6 @@
       addBtn.hidden = rec.hidden = !!ev.cancelled;
       modal.classList.add('open');
       modal.setAttribute('aria-hidden','false');
-      // focus for accessibility
       modal.querySelector('.modal-close').focus();
     }
 
@@ -455,7 +390,6 @@
       modal.setAttribute('aria-hidden','true');
     }
 
-    // Modal interactions
     (function attachModalHandlers(){
       const modal = document.getElementById('eventModal');
       if(!modal) return;
@@ -467,7 +401,6 @@
       });
     })();
 
-    // Build a reusable event card node for list and next talk
     function buildEventCard(ev){
       const d = new Date(ev.startAt);
       const end = new Date(ev.endAt);
@@ -517,7 +450,6 @@
       return node;
     }
 
-    // .ics download 
     function toICSDate(d){
       const yyyy = d.getUTCFullYear();
       const mm = String(d.getUTCMonth()+1).padStart(2,'0');
@@ -562,7 +494,6 @@
     }
     function downloadICS(evts, name){ download(name, icsFor(evts)); }
 
-    // Controls
     $('#year').textContent = new Date().getFullYear();
 
     $$('.tab[role="tab"]').forEach(btn=>btn.addEventListener('click', e=>{
@@ -578,16 +509,7 @@
     $('#search').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
 
     $('#download-ics').addEventListener('click', ()=> downloadICS(events.filter(e=>!e.cancelled), 'visual-computing-seminar-series.ics'));
-    const addNextBtn = $('#add-next');
-    if(addNextBtn){
-      addNextBtn.addEventListener('click', ()=>{
-        const now = new Date();
-        const next = events.find(e=>e.endAt>now);
-        if(next) downloadICS([next], `vcs-${next.startAt.toISOString().slice(0,10)}.ics`);
-      });
-    }
 
-    // Theme toggle (light/dark) with persistence
     (function initTheme(){
       const root = document.documentElement;
       const btn = document.getElementById('theme-toggle');
@@ -612,7 +534,6 @@
       }
     })();
 
-    // Render Next Talk bar
     (function renderNextTalk(){
       const now = new Date();
       const next = events.find(e=>e.endAt>now && !e.cancelled);

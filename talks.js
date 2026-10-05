@@ -12,10 +12,10 @@
 //   site, scholar  the speaker's website and Google Scholar, shown as icons
 //   url            a Details button (slides, an event page)
 //   recording      a link that turns on the Recording button
-//   photo          headshot, ideally a square in assets/speakers/
+//   photo          a square image: headshots in assets/speakers/, event art in assets/events/
 //   notes          a short line under the date; may hold a link
 //   abstract, bio  plain text in `backticks`; a blank line starts a new paragraph
-//   cancelled      true: the week shows "No seminar this week"
+//   cancelled      true, or a reason: the week shows "No seminar"
 //   skip           'reason': the week is left off the calendar
 //   talks          several talks in one slot: a list of { start, end, title, speaker, ... }
 
@@ -269,6 +269,32 @@ const talks = [
     scholar: 'https://scholar.google.com/citations?user=N1x7v90AAAAJ',
     photo: 'assets/speakers/david-dai.webp',
     abstract: `Medical foundation models fail on difficult cases where training data is rare. Even frontier models diagnose rare diseases poorly. Self-play could supply unlimited training tasks, but existing methods depend on a programmatic verifier that healthcare domain lacks. In this presentation, we present a two-stage approach in which a single base model recursively improves itself. First, the same model proposes diagnostic tasks grounded in a retrieved medical knowledge base, solves them, and judges its own answers, while a difficulty controller keeps tasks at the edge of the solver’s ability. Second, self-evolution extends to the reward specification, with the loop co-generating each open-ended task together with its grading rubric and hardening the rubric through an adversarial hack-then-patch cycle. Results show that accuracy scales nearly linearly with self-evolution compute while static task pools stall, that self-generated data outperforms distillation from stronger teachers, and that the resulting model surpasses frontier systems on rare-disease diagnosis at a small fraction of their cost.`,
+  },
+  {
+    date: '2026-11-10',
+    speaker: 'Jason Adhinarta',
+    affiliation: 'Medical Vision Group, MIT',
+    location: '32-D463 Star Room',
+    site: 'https://jasonkena.github.io',
+    scholar: 'https://scholar.google.com/citations?user=I2a9AJEAAAAJ',
+    photo: 'assets/speakers/jason-adhinarta.webp',
+  },
+  {
+    date: '2026-11-17',
+    speaker: 'Ana Dodik',
+    affiliation: 'Geometric Data Processing Group, MIT',
+    location: '32-D463 Star Room',
+    site: 'https://anadodik.github.io',
+    scholar: 'https://scholar.google.com/citations?user=cDmCKFcAAAAJ',
+    photo: 'assets/speakers/ana-dodik.webp',
+  },
+  { date: '2026-11-24', cancelled: 'Thanksgiving week' },
+  {
+    date: '2026-12-01',
+    title: 'Lightning Talks',
+    location: '32-D463 Star Room',
+    photo: 'assets/events/lightning-talks.webp',
+    notes: '2–5 min lightning talks; sign-ups opening soon!',
   },
   {
     date: '2026-12-08',
