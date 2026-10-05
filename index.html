@@ -139,6 +139,7 @@
     </div>
   </div>
 
+  <script src="talks.js"></script>
   <script>
     // Some helpers
     const $ = (sel, el=document) => el.querySelector(sel);
@@ -191,64 +192,17 @@
           url: '',
           photo: '',
           series: '',
-          seminar: '',
         });
       }
       return events;
     }
 
-    // We add seminars manually here
-    const manual = [
-      { date: '2025-09-09', title: 'Kickoff Event', location: '32-D463 Star Room', seminar: false, url: 'https://docs.google.com/presentation/d/1jppimjbEhUpKfYxHUp5sDO6RkALYHzPo4OGUqvYmr-A/edit?usp=sharing', photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
-      { date: '2025-09-16', title: 'Coadjoint Orbits Preserving Fluid Simulation', speaker: 'Sina Nabizadeh', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://sinabiz.github.io/images/sina25.jpeg' },
-      { date: '2025-09-23', title: 'Verified Scheduling for Optimizing High-Level Tensor Programs', speaker: 'Amanda Liu', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, short: true, photo: 'https://people.csail.mit.edu/lamanda/images/avatar.jpg' },
-      { date: '2025-09-30', title: 'A Geometric View of Data Complexity: Efficient Local Intrinsic Dimension Estimation with Diffusion Models', speaker: 'Hamid Kamkari', affiliation: 'CSAIL', location: '32-D507', seminar: true, long: true, photo: 'https://hamidrezakmk.github.io/hamid.png' },
-      { date: '2025-10-07', title: 'Scaling World Simulators for Safe Physical Intelligence', speaker: 'Jingkang Wang', affiliation: 'University of Toronto', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=c0BTYC4AAAAJ&citpid=7' },
-      { date: '2025-10-14', title: '3D Symmetric Tensor Field Topology', speaker: 'Eugene Zhang', affiliation: 'Oregon State University', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://engineering.oregonstate.edu/sites/engineering.oregonstate.edu/files/styles/profile_image/public/2023-04/profile-eugene-zhang.jpg?itok=1QhU6k52' },
-      { date: '2025-10-21', title: 'PhysiOpt: Physics-Driven Shape Optimization for 3D Generative Models', speaker: 'Sean Zhan and Clement Jambon',   affiliation: 'CSAIL', location: '32-D507', seminar: true, short: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2023/09/sean_lower_res-1024x1024.jpg'},
-      { date: '2025-10-28', title: 'Geometric Methods for Physics Simulation', speaker: 'Oliver Gross', affiliation: 'UCSD', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://olligross.github.io/images/profile-mine.jpg'},
-      { date: '2025-11-04', speaker: 'Abe Davis', affiliation: 'Cornell University', location: '32-141', seminar: true, long: true,  photo: 'https://www.cs.cornell.edu/abe/group/content/groupbios/abe/abe.jpeg'},
-      { skip: '2025-11-11', reason: 'Veterans Day' },
-      { date: '2025-11-18', title: 'Support Function Parameterization of Convex Hulls for Fast Distance Queries', speaker: 'Anh Truong', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2024/10/anh.jpg' },
-      { skip: '2025-11-25', reason: 'Thanksgiving' },
-      { date: '2025-12-02', title: 'One String to Pull Them All: Fast Assembly of Curved Structures from Flat Auxetic Linkages', speaker: 'Akib Zaman', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://adg.csail.mit.edu/wp-content/uploads/2023/09/akib-scaled-e1694743990993-768x768.jpg' },
-      { date: '2025-12-09', title: 'Addressing the Unexpected - Anomaly Detection and AI Safety', speaker: 'Niv Cohen', affiliation: 'NYU', location: '32-141', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=ZMdC3OQAAAAJ&citpid=5' },
-      { skip: '2025-12-16', reason: 'Holiday' },
-      { skip: '2025-12-23', reason: 'Holiday' },
-      { skip: '2025-12-30', reason: 'Holiday' },
-      { skip: '2026-01-06', reason: 'IAP' },
-      { skip: '2026-01-13', reason: 'IAP' },
-      { skip: '2026-01-20', reason: 'IAP' },
-      { skip: '2026-01-27', reason: 'IAP' },
-      { skip: '2026-01-27', reason: 'IAP' },
-      { skip: '2026-02-03', reason: 'IAP' },
-      { date: '2026-02-17', title: 'Learning a distance measure from the information-estimation geometry of data', speaker: 'Guy Ohayon', affiliation: 'Flatiron Institute', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=Gso71ogAAAAJ&citpid=9' },
-      { date: '2026-03-03', title: 'Continual learning: the Where, What, and When of Introspective Updates', speaker: 'Saurav Jha', affiliation: 'MILA', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://sauravjha.com.np/compressed_images/saurav_compressed.jpg' },
-      { date: '2026-03-17', title: 'Wizard of Oz: An Experiential Time Machine powered by Google AI now Playing at the Las Vegas Sphere', speaker: 'Irfan Essa', affiliation: 'GeorgiaTech', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=XM97iScAAAAJ&citpid=2' },
-      { skip: '2026-03-24', reason: 'Spring Break' },
-      { date: '2026-03-31', title: 'Towards self-driving MRI for fetal brain imaging', speaker: 'Ramya Muthukrishnan', affiliation: 'CSAIL', location: '32-D463 Star Room', seminar: true, long: true, },
-      { date: '2026-04-07', title: 'Generative Re-Photography with Video Models', speaker: 'Sai Tedla', affiliation: 'York University', location: '32-D463 Star Room', seminar: true, long: true , photo: 'https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Uim89fkAAAAJ&citpid=8'},
-      { date: '2026-04-14', title: 'From Measurements to Structure: Annotation-Free Acquisition of Symbolic Geometry', speaker: 'Aditya Ganeshan', affiliation: 'Brown University', location: '32-D463 Star Room', seminar: true, long: true , photo: 'https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Aw1Sb4gAAAAJ&citpid=3'},
-      { date: '2026-04-21', title: 'TBA', speaker: 'Raphi Kang', affiliation: 'Caltech', location: '32-D463 Star Room', seminar: true, long: true, photo: 'https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=49_WjdIAAAAJ&citpid=2' },
-      { date: '2026-04-28', title: 'Geometry and Mechanics of Fluid Surfaces', speaker: 'Cuncheng Zhu', affiliation: 'UCSD', location: '32-370', seminar: true, long: true , photo: 'https://cunchengzhu.github.io/assets/images/profile.jpg'},
-      { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
-      { date: '2026-09-29', cancelled: true },
-      { date: '2026-10-06', speaker: 'Tzofi Klinghoffer', affiliation: 'Camera Culture Group, MIT', start: '12:15', location: '32-G449 Kiva Room', seminar: true, site: 'https://www.tzofi.com', scholar: 'https://scholar.google.com/citations?user=U-h-AxUAAAAJ', photo: 'assets/speakers/tzofi-klinghoffer.webp',
-        title: 'Learning from Sensors, Learning for Sensors',
-        abstract: `AI systems can only reason from the information their sensors provide. Yet sensing and learning are often designed separately: sensors produce fixed, often processed measurements, and algorithms are trained afterward to interpret them. My research asks what becomes possible when we move the boundary of the learning problem earlier and treat the sensing process itself as part of visual intelligence. I will present work on learning from sensors, including recovering hidden 3D structure from indirect time-of-flight measurements and performing perception directly from sparse single-photon measurements in extreme low light, as well as learning for sensors, where downstream tasks help determine how sensing systems should be designed. Across these projects, the goal is to extract more useful information from physical sensor measurements and ultimately improve how those measurements are acquired in the first place.`,
-        bio: `Tzofi Klinghoffer is a final-year Ph.D. student in the Media Lab at Massachusetts Institute of Technology. His research lies at the intersection of sensing, 3D vision/rendering, and machine learning. His goal is to enable new vision capabilities by leveraging emerging sensors with machine learning. His work has been published at vision, graphics, and imaging venues, such as CVPR, ICCV, ECCV, ICCP, and SIGGRAPH Asia, and was recognized with a Best Paper Award Finalist nomination at CVPR 2024. He is a Draper Scholar, Qualcomm Innovation Fellow, and DoD NDSEG Fellow. Prior to his PhD, Tzofi was a research scientist and machine learning engineer at MIT Lincoln Laboratory and Amazon.` },
-      { date: '2026-10-13', speaker: 'Laura Dodds', affiliation: 'Signal Kinetics Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://laura-dodds.github.io', scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ', photo: 'assets/speakers/laura-dodds.webp' },
-      { date: '2026-10-20', speaker: 'Sebo Diaz', affiliation: 'Medical Vision Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sebo.sh', scholar: 'https://scholar.google.com/citations?user=NIU3SBUAAAAJ', photo: 'assets/speakers/sebo-diaz.webp' },
-      { date: '2026-10-27', speaker: 'Victor Butoi', affiliation: 'Clinical and Applied Machine Learning Group, MIT', location: '32-D507', seminar: true, site: 'https://victorbutoi.github.io', scholar: 'https://scholar.google.com/citations?user=uJ_5zuYAAAAJ', photo: 'assets/speakers/victor-butoi.webp' },
-      { date: '2026-11-03', speaker: 'David Dai', affiliation: 'Multisensory Intelligence Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://dd.works', scholar: 'https://scholar.google.com/citations?user=N1x7v90AAAAJ', photo: 'assets/speakers/david-dai.webp' },
-      { date: '2026-12-08', speaker: 'Siddharth Somasundaram', affiliation: 'Camera Culture Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sidsoma.com', scholar: 'https://scholar.google.com/citations?user=WnLfhFQAAAAJ', photo: 'assets/speakers/siddharth-somasundaram.webp' },
-    ];
-
-    function applyManual(base){
+    // Fill the generated Tuesdays with the entries in talks.js
+    function applyTalks(base){
       const byDate = new Map(base.map(ev => [ev.startAt.toISOString().slice(0,10), ev]));
 
-      for(const m of manual){
-        if(m.skip){ byDate.delete(m.skip); continue; }
+      for(const m of talks){
+        if(m.skip){ byDate.delete(m.date); continue; }
 
         if(m.date){
           // if a date declares multiple talks, replace that day with separate events
@@ -279,7 +233,6 @@
                 short: t.short ?? true,
                 long: t.long ?? false,
                 series: !!m.series,
-                seminar: !!m.seminar,
               };
               // Store alongside others for that date
               const bucket = byDate.get(m.date);
@@ -317,7 +270,7 @@
 
     // Build event data
     const baseEvents = generateTuesdays(new Date(), 22); // tweak the window
-    const events = applyManual(baseEvents);
+    const events = applyTalks(baseEvents);
 
     // Calendar state and rendering
     const state = {
