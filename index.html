@@ -130,6 +130,7 @@
         <div class="modal-where"></div>
         <div class="modal-who"></div>
       </div>
+      <div class="talk-text open modal-text"></div>
       <div class="modal-actions">
         <button id="modal-add-ics" class="btn" type="button">Add to Calendar</button>
         <a class="btn modal-recording is-disabled" aria-disabled="true">Recording</a>
@@ -232,7 +233,10 @@
       { date: '2026-04-28', title: 'Geometry and Mechanics of Fluid Surfaces', speaker: 'Cuncheng Zhu', affiliation: 'UCSD', location: '32-370', seminar: true, long: true , photo: 'https://cunchengzhu.github.io/assets/images/profile.jpg'},
       { date: '2026-09-22', title: 'Kickoff Event', speaker: '', notes: 'Intro event to kick off the year + <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr710FspalOMh3pBwWqPP16boyeXcIE9K4Bqr-U-qKAVofRA/viewform" target="_blank" rel="noopener">presentation slot sign-ups</a>.', location: '32-D463 Star Room', seminar: false, photo: 'https://www.csail.mit.edu/sites/default/files/styles/primary_image/public/2017-08/Stata%20CROPPED_0.jpg?h=a5e20daa&itok=5FsCidwu' },
       { date: '2026-09-29', cancelled: true },
-      { date: '2026-10-06', speaker: 'Tzofi Klinghoffer', affiliation: 'Camera Culture Group, MIT', start: '12:15', location: '32-G449 Kiva Room', seminar: true, site: 'https://www.tzofi.com', scholar: 'https://scholar.google.com/citations?user=U-h-AxUAAAAJ', photo: 'assets/speakers/tzofi-klinghoffer.webp' },
+      { date: '2026-10-06', speaker: 'Tzofi Klinghoffer', affiliation: 'Camera Culture Group, MIT', start: '12:15', location: '32-G449 Kiva Room', seminar: true, site: 'https://www.tzofi.com', scholar: 'https://scholar.google.com/citations?user=U-h-AxUAAAAJ', photo: 'assets/speakers/tzofi-klinghoffer.webp',
+        title: 'Learning from Sensors, Learning for Sensors',
+        abstract: `AI systems can only reason from the information their sensors provide. Yet sensing and learning are often designed separately: sensors produce fixed, often processed measurements, and algorithms are trained afterward to interpret them. My research asks what becomes possible when we move the boundary of the learning problem earlier and treat the sensing process itself as part of visual intelligence. I will present work on learning from sensors, including recovering hidden 3D structure from indirect time-of-flight measurements and performing perception directly from sparse single-photon measurements in extreme low light, as well as learning for sensors, where downstream tasks help determine how sensing systems should be designed. Across these projects, the goal is to extract more useful information from physical sensor measurements and ultimately improve how those measurements are acquired in the first place.`,
+        bio: `Tzofi Klinghoffer is a final-year Ph.D. student in the Media Lab at Massachusetts Institute of Technology. His research lies at the intersection of sensing, 3D vision/rendering, and machine learning. His goal is to enable new vision capabilities by leveraging emerging sensors with machine learning. His work has been published at vision, graphics, and imaging venues, such as CVPR, ICCV, ECCV, ICCP, and SIGGRAPH Asia, and was recognized with a Best Paper Award Finalist nomination at CVPR 2024. He is a Draper Scholar, Qualcomm Innovation Fellow, and DoD NDSEG Fellow. Prior to his PhD, Tzofi was a research scientist and machine learning engineer at MIT Lincoln Laboratory and Amazon.` },
       { date: '2026-10-13', speaker: 'Laura Dodds', affiliation: 'Signal Kinetics Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://laura-dodds.github.io', scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ', photo: 'assets/speakers/laura-dodds.webp' },
       { date: '2026-10-20', speaker: 'Sebo Diaz', affiliation: 'Medical Vision Group, MIT', location: '32-D463 Star Room', seminar: true, site: 'https://sebo.sh', scholar: 'https://scholar.google.com/citations?user=NIU3SBUAAAAJ', photo: 'assets/speakers/sebo-diaz.webp' },
       { date: '2026-10-27', speaker: 'Victor Butoi', affiliation: 'Clinical and Applied Machine Learning Group, MIT', location: '32-D507', seminar: true, site: 'https://victorbutoi.github.io', scholar: 'https://scholar.google.com/citations?user=uJ_5zuYAAAAJ', photo: 'assets/speakers/victor-butoi.webp' },
@@ -268,6 +272,8 @@
                 url: t.url || '',
                 site: t.site || '',
                 scholar: t.scholar || '',
+                abstract: t.abstract || '',
+                bio: t.bio || '',
                 recording: t.recording || '',
                 photo: t.photo || m.photo || '',
                 short: t.short ?? true,
@@ -287,15 +293,14 @@
             continue;
           }
 
-          // Single event override path
+          // Single event: the entry's fields fill in the Tuesday placeholder (or a new event off the generated weeks)
           let ev = byDate.get(m.date);
-          if(ev){ Object.assign(ev, m); }
-          else {
-            const d = noonET(m.date);
-            const end = new Date(d.getTime() + 3600e3);
-            ev = { id: `extra-${m.date}`, title: m.title || '', speaker: m.speaker||'', affiliation: m.affiliation||'', notes: m.notes||'', startAt: d, endAt: end, location: m.location||locationName, url: m.url||'', site: m.site||'', scholar: m.scholar||'', recording: m.recording||'', photo: m.photo||'', series:false};
+          if(!ev){
+            const startAt = noonET(m.date);
+            ev = { id: `extra-${m.date}`, startAt, endAt: new Date(startAt.getTime() + 3600e3), location: locationName };
             byDate.set(m.date, ev);
           }
+          Object.assign(ev, m);
           if(m.start) ev.startAt = atET(m.date, m.start);
           if(m.end) ev.endAt = atET(m.date, m.end);
         }
@@ -330,17 +335,23 @@
     function eventMatches(ev, q){
       if(!q) return true;
       q = q.toLowerCase();
-      return [ev.title, ev.speaker, ev.affiliation, ev.notes].filter(Boolean).some(s => String(s).toLowerCase().includes(q));
+      return [ev.title, ev.speaker, ev.affiliation, ev.notes, ev.abstract, ev.bio].filter(Boolean).some(s => String(s).toLowerCase().includes(q));
     }
 
     // A talk known only by its speaker leads with the speaker, then the affiliation;
-    // mark (the speaker's link icons) follows the speaker's name wherever it lands
+    // mark (the speaker's link icons) follows the name, or ends the speaker line under a title
     function talkLabel(ev, mark = ''){
       if(ev.cancelled) return { head: 'No seminar this week', sub: '' };
       const title = ev.title && ev.title !== 'TBA' ? ev.title : '';
-      const speaker = ev.speaker && ev.speaker !== 'TBA' ? ev.speaker + mark : '';
-      if(title) return { head: title, sub: [speaker, ev.affiliation].filter(Boolean).join(' • ') };
-      return { head: speaker || 'TBA', sub: speaker ? (ev.affiliation || '') : '' };
+      const speaker = ev.speaker && ev.speaker !== 'TBA' ? ev.speaker : '';
+      if(title) return { head: title, sub: [speaker, ev.affiliation].filter(Boolean).join(' • ') + (speaker ? mark : '') };
+      return { head: speaker ? speaker + mark : 'TBA', sub: speaker ? (ev.affiliation || '') : '' };
+    }
+
+    // Abstract and bio as HTML: plain text, a blank line starts a new paragraph
+    function talkText(ev){
+      const paras = text => String(text).trim().split(/\n\s*\n/).map(p => `<p>${p.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</p>`).join('');
+      return (ev.abstract ? paras(ev.abstract) : '') + (ev.bio ? `<h5>About the speaker</h5>${paras(ev.bio)}` : '');
     }
 
     const linkIcons = {
@@ -460,6 +471,9 @@
       modal.querySelector('.modal-title').innerHTML = label.head;
       modal.querySelector('.modal-when').textContent = ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET`;
       modal.querySelector('.modal-who').innerHTML = label.sub;
+      const text = modal.querySelector('.modal-text');
+      text.innerHTML = talkText(ev);
+      text.hidden = !text.innerHTML;
       const whereEl = modal.querySelector('.modal-where');
       const loc = ev.location || locationName;
       const mapsHref = 'https://www.google.com/maps?q=MIT+Building+32';
@@ -529,6 +543,8 @@
           ${label.sub ? `<div class="meta">${label.sub}</div>` : ''}
           <div class="meta">${ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a>`}</div>
           ${ev.notes?`<div class="meta notes" style="margin-top:4px">${ev.notes}</div>`:''}
+          ${ev.abstract || ev.bio ? `<div class="talk-text">${talkText(ev)}</div>
+          <button class="read-more" type="button" aria-expanded="false"><span>Read more</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>` : ''}
           ${ev.cancelled ? '' : `<div class="actions">
             <button class="btn add-ics-btn">Add to Calendar</button>
             ${ev.recording?`<a class="btn" target="_blank" rel="noopener" href="${ev.recording}">Recording</a>`:'<a class="btn is-disabled" aria-disabled="true">Recording</a>'}
@@ -537,6 +553,14 @@
         </div>`;
       const addIcs = node.querySelector('.actions .add-ics-btn');
       if(addIcs){ addIcs.addEventListener('click', ()=> downloadICS([ev], 'visual-computing-seminar.ics')); }
+      const more = node.querySelector('.read-more');
+      if(more){
+        more.addEventListener('click', ()=>{
+          const open = node.querySelector('.talk-text').classList.toggle('open');
+          more.setAttribute('aria-expanded', String(open));
+          more.firstChild.textContent = open ? 'Show less' : 'Read more';
+        });
+      }
       return node;
     }
 
@@ -564,7 +588,7 @@
         lines.push(`DTEND:${toICSDate(ev.endAt)}`);
         lines.push(`SUMMARY:${escapeICS(talkLabel(ev).head)}`);
         const plainNotes = String(ev.notes||'').replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '$2 ($1)').replace(/<[^>]+>/g, ''); // notes may contain links
-        const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, plainNotes].filter(Boolean);
+        const descParts = [ev.speaker?`Speaker: ${ev.speaker}`:null, ev.affiliation, plainNotes, ev.abstract].filter(Boolean);
         lines.push(`DESCRIPTION:${escapeICS(descParts.join(' — '))}`);
         lines.push(`LOCATION:${escapeICS(ev.location || locationName)}`);
         if(ev.url) lines.push(`URL:${ev.url}`);

@@ -152,6 +152,15 @@ section{ scroll-margin-top: 88px; }
 [data-theme="dark"] .event .notes{ color:#9A9EA4; }
 [data-theme="dark"] .event .notes a{ color: color-mix(in srgb, var(--blue) 70%, #9A9EA4); }
 .event .side{ display:grid; gap:8px; }
+/* Abstract and bio: a three-line preview on cards, opened in place or shown whole in the popup */
+.talk-text{ margin-top: 10px; max-width: 72ch; font-size: .9em; line-height: 1.6; color: var(--muted); font-weight: 500; }
+.talk-text p{ margin: 0 0 .7em; }
+.talk-text h5{ margin: 1.1em 0 .3em; font-size: 1em; color: var(--ink); }
+.talk-text:not(.open){ max-height: 4.8em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 40%, transparent); mask-image: linear-gradient(#000 40%, transparent); }
+.read-more{ display:inline-flex; align-items:center; gap:4px; margin-top: 2px; padding: 0; border: 0; background: none; font: inherit; font-size: .85rem; font-weight: 700; color: var(--blue); cursor: pointer; }
+.read-more:hover span{ text-decoration: underline; }
+.read-more .icon{ vertical-align: 0; transition: transform .2s ease; }
+.read-more[aria-expanded="true"] .icon{ transform: rotate(180deg); }
 .speaker-links{ display:inline-flex; gap:6px; margin-left:10px; vertical-align:middle; position:relative; top:-.09em; }
 .speaker-links a{ display:grid; place-items:center; width:28px; height:28px; border-radius:50%; color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); transition: background .15s ease; }
 .speaker-links a:hover{ background: color-mix(in srgb, var(--blue) 24%, transparent); }
@@ -221,7 +230,7 @@ footer .container{ display:flex; align-items:center; justify-content: space-betw
 /* Modal styles */
 .modal{ position: fixed; inset: 0; background: rgba(0,0,0,.45); display:none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
 .modal.open{ display:flex; }
-.modal-dialog{ background: #fff; border-radius: 14px; border:1px solid var(--light); padding: 16px; max-width: 560px; width: 100%; position: relative; }
+.modal-dialog{ background: #fff; border-radius: 14px; border:1px solid var(--light); padding: 16px; max-width: 560px; width: 100%; max-height: calc(100vh - 40px); overflow-y: auto; position: relative; }
 [data-theme="dark"] .modal-dialog{ background:#161718; border-color:#2A2D2D; color:#e6e7e8; }
 .modal-close{ position: absolute; top: 8px; right: 8px; border:0; background: transparent; color: inherit; font-size: 1.1rem; cursor: pointer; }
 .modal-photo{ width: 100%; height: 180px; object-fit: cover; object-position: center 30%; border-radius: 10px; margin-bottom: 10px; }
