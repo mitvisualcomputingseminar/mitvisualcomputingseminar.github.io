@@ -291,10 +291,11 @@ const talks = [
   { date: '2026-11-24', cancelled: 'Thanksgiving week' },
   {
     date: '2026-12-01',
-    title: 'Lightning Talks',
+    speaker: 'Antoine Salaün',
+    affiliation: 'Beery Lab, MIT',
     location: '32-D463 Star Room',
-    photo: 'assets/events/lightning-talks.webp',
-    notes: '2–5 min lightning talks; sign-ups opening soon!',
+    site: 'https://www.antoinesalaun.com',
+    photo: 'assets/speakers/antoine-salaun.webp',
   },
   {
     date: '2026-12-08',
