@@ -240,6 +240,9 @@ const talks = [
     site: 'https://laura-dodds.github.io',
     scholar: 'https://scholar.google.com/citations?user=KIgj3WQAAAAJ',
     photo: 'assets/speakers/laura-dodds.webp',
+    title: 'Seeing Beyond What’s Visible: Next-Generation Wireless Imaging',
+    abstract: `As autonomous systems become more advanced, there is an increasing need to perceive objects which are fully occluded, such as inside closed boxes, beneath clutter, or around the corner. In this talk, I will discuss several next-generation through-occlusion imaging technologies which leverage millimeter-wave (mmWave) wireless signals. First, I will describe a new mmWave object reconstruction method, which fundamentally departs from several decades of prior research and demonstrates a significant qualitative leap in object reconstruction. I will describe the method, theory underlying it, and the new directions it opens in mmWave perception. Second, I will discuss how mmWave signals can be used to image around-the-corner, by leveraging reflections off the surrounding environment. Together, these advances open several exciting research directions, and mark key steps toward autonomous systems that can perceive fully occluded objects, enabling new capabilities in robotics, shipping and logistics, and augmented reality.`,
+    bio: `Laura Dodds is a PhD student at MIT advised by Prof. Fadel Adib. Her research focuses on wireless and sensing systems, broadly spanning perception, communication, mobile computing, and autonomous systems. Her work has received broad recognition, including with the IEEE RFID Best Paper award, ACM MobiSys Best Paper Finalist, Best MEng Thesis in AI and Decision-Making at MIT, Amazon Robotics Thriving Stars Fellowship, and MIT Jacobs Presidential Fellowship.`,
   },
   {
     date: '2026-10-20',
