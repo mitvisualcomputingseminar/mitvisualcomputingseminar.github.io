@@ -252,6 +252,9 @@ const talks = [
     site: 'https://sebo.sh',
     scholar: 'https://scholar.google.com/citations?user=NIU3SBUAAAAJ',
     photo: 'assets/speakers/sebo-diaz.webp',
+    title: 'Why Invariance Is Not Enough for Biomedical Domain Generalization and How to Fix It',
+    abstract: `Invariant representations hold promise for enabling modern medical imaging models to generalize beyond their siloed training distributions. However, invariance alone is often insufficient to guarantee strong generalization, as such representations can discard useful predictive information. In this talk, we discuss how invariant representations can be obtained and how to exploit them in a simple and effective manner.`,
+    bio: `Sebo Diaz is a fourth-year PhD candidate in HST advised by Prof. Elfar Adalsteinsson and Prof. Polina Golland. His research focuses on data augmentation, synthetic data, and domain generalization in medical imaging. His work has been published at MICCAI and NeurIPS. He is a recipient of the NSF GRFP, MathWorks, and MIT SoE Fellowships.`,
   },
   {
     date: '2026-10-27',
