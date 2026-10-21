@@ -264,6 +264,9 @@ const talks = [
     site: 'https://victorbutoi.github.io',
     scholar: 'https://scholar.google.com/citations?user=uJ_5zuYAAAAJ',
     photo: 'assets/speakers/victor-butoi.webp',
+    title: 'Universal Clinical X-ray Segmentation',
+    abstract: `X-ray is medicine's most widely used imaging modality, yet remains among its least quantitative. Unlike volumetric modalities like CT or MRI, X-ray collapses 3D anatomy into a 2D projection, causing structures to overlap and anatomical boundaries to be ambiguous, even to experts. As a result, labeling X-ray databases for training general-purpose segmentation systems is impractical, leaving morphometric and functional X-ray analysis confined to narrow anatomical regions and applications. To this end, we present FleXray, a generalist model for anatomical segmentation across the entire body in clinical X-rays. Instead of curating large, manually annotated X-ray datasets, we build a scalable, physics-based generative X-ray data engine. Using existing 3D whole-body CT segmentation datasets and generative image-editing models, we simulate fully-annotated 2D X-rays with diverse appearances, physiological properties, and imaging geometries. Trained on these simulations, FleXray accurately segments 60 anatomical structures across unseen research datasets and in-the-wild X-rays. We further show that FleXray makes X-rays directly amenable to quantitative analysis, enabling automated measurements for disease grading, robust navigation during X-ray-guided interventions, and data-efficient learning of pathological targets.`,
+    bio: `Victor is a 5th year Computer Science PhD student at MIT advised by Professors Adrian Dalca and John Guttag as part of the Clinical and Applied Machine Learning (CAML) Group. He is interested in problems lying at the core of machine learning and computer vision, often with applications to healthcare.`,
   },
   {
     date: '2026-11-03',
