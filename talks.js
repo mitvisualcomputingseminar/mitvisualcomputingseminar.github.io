@@ -300,6 +300,15 @@ const talks = [
   { date: '2026-11-24', cancelled: 'Thanksgiving week' },
   {
     date: '2026-12-01',
+    speaker: 'Siddharth Somasundaram',
+    affiliation: 'Camera Culture Group, MIT',
+    location: '32-D463 Star Room',
+    site: 'https://sidsoma.com',
+    scholar: 'https://scholar.google.com/citations?user=WnLfhFQAAAAJ',
+    photo: 'assets/speakers/siddharth-somasundaram.webp',
+  },
+  {
+    date: '2026-12-08',
     speaker: 'Antoine Salaün',
     affiliation: 'Beery Lab, MIT',
     location: '32-D463 Star Room',
@@ -307,12 +316,16 @@ const talks = [
     photo: 'assets/speakers/antoine-salaun.webp',
   },
   {
-    date: '2026-12-08',
-    speaker: 'Siddharth Somasundaram',
-    affiliation: 'Camera Culture Group, MIT',
+    date: '2026-12-15',
+    speaker: 'Thea Collin',
+    affiliation: 'COMMIT Group, MIT',
     location: '32-D463 Star Room',
-    site: 'https://sidsoma.com',
-    scholar: 'https://scholar.google.com/citations?user=WnLfhFQAAAAJ',
-    photo: 'assets/speakers/siddharth-somasundaram.webp',
+    site: 'https://people.csail.mit.edu/teoc/',
+    title: 'Abstractions for Automated Finite Element Methods',
+    abstract: `Finite element methods (FEMs) are powerful and widely used tools for solving engineering problems. However, exploring alternative finite elements requires substantial mathematical and software effort: practitioners must derive element-specific formulas, integrate them into potentially complex simulation software, and implement additional analyses to understand their consequences. These barriers make it difficult to investigate tradeoffs among element choices.
+
+We introduce ElementForge, a complete finite element system parameterized by literate mathematical element specifications written in a domain-specific language (DSL). ElementForge addresses two parts of this workflow. First, its compiler reasons about tensor spaces, tensors, and tensor bases from first principles to automatically derive implementations of finite elements previously derived only by hand. Second, the system exposes the discrete mathematical structures underlying these implementations, allowing practitioners to inspect element-specific quantities and construct analyses of the resulting discretizations. ElementForge minimally couples tensor fields, mesh topologies, sparse tensors, and assembled finite element operators through a novel relational-topological abstraction to support both simulation and analysis parametrically over the choice of element.
+
+We evaluate ElementForge through simulations that compare finite elements within a shared application, examining tradeoffs in accuracy, speed, generality, and representational complexity. For example, we implement Morley, Bell, Argyris, and Hermite-like elements in fewer than 50 lines of code and use all of them in the same simulation, enabling direct comparison of their behavior.`,
   },
 ];
