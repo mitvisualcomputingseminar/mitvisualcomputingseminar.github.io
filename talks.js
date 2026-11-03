@@ -300,12 +300,11 @@ const talks = [
   { date: '2026-11-24', cancelled: 'Thanksgiving week' },
   {
     date: '2026-12-01',
-    speaker: 'Siddharth Somasundaram',
-    affiliation: 'Camera Culture Group, MIT',
+    speaker: 'Kaichen Zhou',
+    affiliation: 'Multisensory Intelligence Group, MIT',
     location: '32-D463 Star Room',
-    site: 'https://sidsoma.com',
-    scholar: 'https://scholar.google.com/citations?user=WnLfhFQAAAAJ',
-    photo: 'assets/speakers/siddharth-somasundaram.webp',
+    site: 'https://www.media.mit.edu/people/zhouk777/overview/',
+    photo: 'assets/speakers/kaichen-zhou.webp',
   },
   {
     date: '2026-12-08',
