@@ -364,9 +364,9 @@
       text.innerHTML = (ev.notes ? `<p>${ev.notes}</p>` : '') + talkText(ev);
       text.hidden = !text.innerHTML;
       const whereEl = modal.querySelector('.modal-where');
-      const loc = ev.location || locationName;
       const mapsHref = 'https://www.google.com/maps?q=MIT+Building+32';
-      whereEl.innerHTML = `${loc} · <a href="${mapsHref}" target="_blank" rel="noopener">Map</a>`;
+      whereEl.innerHTML = `${ev.moved ? 'Room change: ' : ''}${ev.location || locationName} · <a href="${mapsHref}" target="_blank" rel="noopener">Map</a>`;
+      whereEl.classList.toggle('moved', !!ev.moved);
       whereEl.hidden = !!ev.cancelled;
       const photo = modal.querySelector('.modal-photo');
       if(ev.photo){ photo.src = ev.photo; photo.hidden = false; } else { photo.hidden = true; }
@@ -427,7 +427,7 @@
         <div>
           <h4>${label.head}</h4>
           ${label.sub ? `<div class="meta">${label.sub}</div>` : ''}
-          <div class="meta">${ev.cancelled ? fmt.format(d) : `${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a>`}</div>
+          <div class="meta${ev.moved ? ' moved' : ''}">${ev.cancelled ? fmt.format(d) : `${ev.moved ? 'Room change: ' : ''}${fmt.format(d)} · ${fmtTime.format(d)}–${fmtTime.format(end)} ET · ${ev.location || locationName} · <a href="https://www.google.com/maps?q=MIT+Building+32" target="_blank" rel="noopener">Map</a>`}</div>
           ${ev.notes?`<div class="meta notes" style="margin-top:4px">${ev.notes}</div>`:''}
           ${ev.abstract || ev.bio ? `<div class="talk-text">${talkText(ev)}</div>
           <button class="read-more" type="button" aria-expanded="false"><span>Read more</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>` : ''}

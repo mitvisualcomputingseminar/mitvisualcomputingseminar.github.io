@@ -8,6 +8,7 @@
 //   title          the talk title; without one the card leads with the speaker
 //   speaker, affiliation
 //   location       '32-D463 Star Room' unless set
+//   moved          true to highlight a changed room in green
 //   long, short    true for a "50 minutes" or "25 minutes" tag
 //   site, scholar  the speaker's website and Google Scholar, shown as icons
 //   url            a Details button (slides, an event page)
@@ -283,7 +284,8 @@ const talks = [
     date: '2026-11-10',
     speaker: 'Jason Adhinarta',
     affiliation: 'Medical Vision Group, MIT',
-    location: '32-D463 Star Room',
+    location: '32-G575',
+    moved: true,
     site: 'https://jasonkena.github.io',
     scholar: 'https://scholar.google.com/citations?user=I2a9AJEAAAAJ',
     photo: 'assets/speakers/jason-adhinarta.webp',
