@@ -145,7 +145,7 @@ section{ scroll-margin-top: 88px; }
 .event h4{ margin: 0; color: #111; }
 [data-theme="dark"] .event h4{ color:#fff; }
 .event .meta{ color: var(--muted); font-weight:600; margin: 4px 0; }
-.event .meta.moved, .modal-where.moved, .moved a{ color: var(--green); font-weight: 800; }
+.moved{ color: var(--green); background: color-mix(in srgb, var(--green) 13%, transparent); padding: 1px 8px; border-radius: 999px; font-weight: 800; white-space: nowrap; }
 .event .notes{ color:#70757C; font-weight:500; }
 .event .notes a{ color: color-mix(in srgb, var(--blue) 70%, #70757C); }
 [data-theme="dark"] .event .notes{ color:#9A9EA4; }
